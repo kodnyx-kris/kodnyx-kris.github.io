@@ -1,18 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Your Name</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact</title>
   <style>
-    body { font-family: sans-serif; text-align: center; margin-top: 100px; }
-    h1 { font-size: 3em; margin-bottom: 0.3em; }
-    p { font-size: 1.2em; }
-    a { color: #0077cc; text-decoration: none; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-image: url('kodnyx_background.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      color: #fff;
+    }
+
+    .overlay {
+      background-color: rgba(0, 0, 0, 0.5); /* darker for better readability */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .mission {
+      font-size: 1.6em;
+      max-width: 600px;
+      margin-bottom: 40px;
+      line-height: 1.4;
+      font-style: italic;
+    }
+
+    a {
+      color: #a3d5ff;
+      font-size: 1.2em;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
   </style>
 </head>
 <body>
-  <h1>Your Name</h1>
-  <p>Job Title / Tagline</p>
-  <p>Email: <a href="mailto:you@example.com">you@example.com</a></p>
+  <div class="overlay">
+    <p class="mission">We are on a mission is to facilitate the global transition towards a grid that embraces the benefits of Direct Current energy infrastructure.</p>
+    <p><a href="mailto:admin@kodnyx.com">admin@kodnyx.com</a></p>
+      <p>Stay tuned, there is more to come.</p>
+  </div>
 </body>
 </html>
