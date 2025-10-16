@@ -69,50 +69,19 @@
       opacity: 0.95;
     }
 
-    .cta-section {
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(10px);
-      border-radius: 12px;
-      padding: 40px;
-      margin-bottom: 60px;
-      text-align: center;
-    }
-
-    .download-btn {
-      display: inline-block;
-      background: #fff;
-      color: #0E4C52;
-      padding: 16px 40px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-size: 1.1em;
-      font-weight: 600;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .download-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-    }
-
     .form-section {
       background: rgba(255, 255, 255, 0.08);
       backdrop-filter: blur(10px);
       border-radius: 12px;
       padding: 40px;
+      margin-bottom: 60px;
     }
 
     .form-section h2 {
       font-size: 1.5em;
-      margin-bottom: 10px;
-      font-weight: 400;
-    }
-
-    .form-subtitle {
-      font-size: 0.95em;
-      opacity: 0.8;
       margin-bottom: 30px;
+      font-weight: 400;
+      text-align: center;
     }
 
     .form-group {
@@ -124,6 +93,17 @@
       margin-bottom: 8px;
       font-size: 0.95em;
       opacity: 0.9;
+    }
+
+    label .required {
+      color: #ff6b6b;
+      margin-left: 4px;
+    }
+
+    label .optional {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 0.85em;
+      margin-left: 4px;
     }
 
     input {
@@ -148,6 +128,10 @@
       background: rgba(255, 255, 255, 0.15);
     }
 
+    input:required {
+      border-left: 3px solid rgba(255, 107, 107, 0.5);
+    }
+
     .submit-btn {
       background: #fff;
       color: #0E4C52;
@@ -158,6 +142,7 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.3s ease;
+      width: 100%;
     }
 
     .submit-btn:hover:not(:disabled) {
@@ -170,18 +155,44 @@
       cursor: not-allowed;
     }
 
-    .success-message {
+    .success-section {
       display: none;
-      background: rgba(76, 175, 80, 0.2);
-      border: 1px solid rgba(76, 175, 80, 0.5);
-      padding: 15px;
-      border-radius: 6px;
-      margin-top: 20px;
       text-align: center;
     }
 
-    .success-message.show {
+    .success-section.show {
       display: block;
+    }
+
+    .success-section h3 {
+      font-size: 1.5em;
+      margin-bottom: 25px;
+      color: #fff;
+      font-weight: 300;
+    }
+
+    .success-section p {
+      margin-bottom: 25px;
+      font-size: 1.1em;
+    }
+
+    .download-btn {
+      display: inline-block;
+      background: #fff;
+      color: #0E4C52;
+      padding: 16px 40px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.1em;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .download-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+      background: #f0f0f0;
     }
 
     .error-message {
@@ -224,7 +235,7 @@
         font-size: 1em;
       }
       
-      .cta-section, .form-section {
+      .form-section {
         padding: 30px 20px;
       }
     }
@@ -239,50 +250,55 @@
       </p>
     </header>
 
-    <div class="cta-section">
-      <a href="https://kodnyx-my.sharepoint.com/:b:/p/kristoffer/Ebfr56BllwpKhuAb_JA-lyMBEHmBM7lVmj1y2I_IV9wK6w?e=rsnhqQ&download=1" 
-         class="download-btn" 
-         onclick="trackDownload()"
-         target="_blank">
-        View Our Pitch Deck
-      </a>
-    </div>
-
     <div class="form-section">
-      <h2>Stay Connected</h2>
-      <p class="form-subtitle">Interested in learning more? Share your details and we'll keep you updated.</p>
+      <h2>Access Our Pitch Deck</h2>
       
       <form id="contactForm" onsubmit="handleSubmit(event)">
         <div class="form-group">
-          <label for="name">Name</label>
-          <input type="text" id="name" name="name" placeholder="Your name">
+          <label for="name">
+            Name<span class="required">*</span>
+          </label>
+          <input type="text" id="name" name="name" placeholder="Your name" required>
         </div>
 
         <div class="form-group">
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" placeholder="your.email@example.com">
+          <label for="email">
+            Email<span class="required">*</span>
+          </label>
+          <input type="email" id="email" name="email" placeholder="your.email@example.com" required>
         </div>
 
         <div class="form-group">
-          <label for="company">Company Name</label>
+          <label for="company">
+            Company Name<span class="optional">(optional)</span>
+          </label>
           <input type="text" id="company" name="company" placeholder="Your company">
         </div>
 
         <div class="form-group">
-          <label for="source">How did you hear about us?</label>
+          <label for="source">
+            How did you hear about us?<span class="optional">(optional)</span>
+          </label>
           <input type="text" id="source" name="source" placeholder="e.g., LinkedIn, referral, conference">
         </div>
 
-        <button type="submit" class="submit-btn" id="submitBtn">Submit</button>
-        
-        <div class="success-message" id="successMessage">
-          Thank you for your interest! We'll be in touch soon.
-        </div>
+        <button type="submit" class="submit-btn" id="submitBtn">Get Pitch Deck</button>
         
         <div class="error-message" id="errorMessage">
           Something went wrong. Please try again or contact us directly at duygu@kodnyx.com
         </div>
       </form>
+
+      <div class="success-section" id="successSection">
+        <h3>Thank you</h3>
+        <a href="http://kodnyx.com/deck.html" 
+           class="download-btn" 
+           onclick="trackDownload()"
+           target="_blank"
+           rel="noopener noreferrer">
+          Download Pitch Deck
+        </a>
+      </div>
     </div>
 
     <footer>
@@ -301,12 +317,11 @@
       
       // Get form elements
       const submitBtn = document.getElementById('submitBtn');
-      const successMessage = document.getElementById('successMessage');
       const errorMessage = document.getElementById('errorMessage');
       const form = document.getElementById('contactForm');
+      const successSection = document.getElementById('successSection');
       
       // Hide any previous messages
-      successMessage.classList.remove('show');
       errorMessage.classList.remove('show');
       
       // Disable submit button
@@ -332,21 +347,19 @@
           // Track the form submission in GA
           trackFormSubmit();
           
-          // Show success message
-          successMessage.classList.add('show');
+          // Hide the form
+          form.style.display = 'none';
           
-          // Reset form
-          form.reset();
+          // Show success section with download button
+          successSection.classList.add('show');
         } else {
           throw new Error('Submission failed');
         }
       } catch (error) {
         console.error('Error submitting form:', error);
         errorMessage.classList.add('show');
-      } finally {
-        // Re-enable submit button
         submitBtn.disabled = false;
-        submitBtn.textContent = 'Submit';
+        submitBtn.textContent = 'Get Pitch Deck';
       }
     }
   </script>
