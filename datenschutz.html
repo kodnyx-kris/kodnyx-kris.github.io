@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datenschutzerklärung – Kodnyx</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-WJ4861VRQT"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-WJ4861VRQT', { 'anonymize_ip': true });
+  </script>
+
+  <style>
+    :root {
+      --teal:       #0E4C52;
+      --teal-light: #5FB7B0;
+      --orange:     #F79646;
+      --white:      #FFFFFF;
+      --off-white:  #F4F6F5;
+      --text-dark:  #0D1F22;
+      --text-mid:   #3A5C60;
+      --border:     rgba(14,76,82,0.12);
+      --font:       'Plus Jakarta Sans', sans-serif;
+      --nav-h:      72px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text-dark);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* NAV */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 5%;
+      background: var(--teal);
+      box-shadow: 0 2px 20px rgba(0,0,0,0.15);
+    }
+    .nav-logo img { height: 36px; width: auto; }
+    .nav-back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: rgba(255,255,255,0.8);
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--white); }
+
+    /* PAGE */
+    .page-wrap {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: calc(var(--nav-h) + 64px) 5% 96px;
+    }
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 2px solid var(--teal-light);
+    }
+    .page-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 12px;
+    }
+    .page-header h1 {
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--teal);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+    }
+    .page-header p {
+      margin-top: 12px;
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
+    /* TOC */
+    .toc {
+      background: var(--off-white);
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 48px;
+    }
+    .toc h2 {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 14px;
+    }
+    .toc ol {
+      list-style: none;
+      counter-reset: toc-counter;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toc ol li {
+      counter-increment: toc-counter;
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      font-size: 0.88rem;
+    }
+    .toc ol li::before {
+      content: counter(toc-counter) ".";
+      font-weight: 700;
+      color: var(--teal-light);
+      min-width: 18px;
+    }
+    .toc ol li a {
+      color: var(--teal);
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+    .toc ol li a:hover { color: var(--teal-light); }
+
+    /* SECTIONS */
+    .ds-section {
+      margin-bottom: 44px;
+      scroll-margin-top: calc(var(--nav-h) + 24px);
+    }
+    .ds-section h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .ds-section h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin: 20px 0 8px;
+    }
+    .ds-section p {
+      font-size: 0.92rem;
+      line-height: 1.75;
+      color: var(--text-mid);
+      margin-bottom: 12px;
+    }
+    .ds-section p:last-child { margin-bottom: 0; }
+    .ds-section ul {
+      list-style: none;
+      margin: 8px 0 12px;
+    }
+    .ds-section ul li {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      color: var(--text-mid);
+      padding: 5px 0 5px 20px;
+      position: relative;
+    }
+    .ds-section ul li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--teal-light);
+      font-weight: 700;
+    }
+    .ds-section a {
+      color: var(--teal);
+      font-weight: 600;
+      border-bottom: 1px solid var(--teal-light);
+      padding-bottom: 1px;
+      transition: color 0.2s;
+    }
+    .ds-section a:hover { color: var(--teal-light); }
+    .info-box {
+      background: var(--off-white);
+      border-left: 3px solid var(--teal-light);
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 12px 0;
+    }
+    .info-box p {
+      font-size: 0.88rem;
+      margin-bottom: 0;
+    }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 44px 0;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--teal);
+      padding: 32px 5%;
+      text-align: center;
+    }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.45);
+    }
+    .footer-copy a {
+      color: rgba(255,255,255,0.6);
+      margin: 0 12px;
+      transition: color 0.2s;
+    }
+    .footer-copy a:hover { color: var(--white); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a href="index.html" class="nav-logo">
+      <img src="kodnyx_white_teal.png" alt="Kodnyx" />
+    </a>
+    <a href="index.html" class="nav-back">
+      ← Zurück zur Website
+    </a>
+  </nav>
+
+  <div class="page-wrap">
+
+    <div class="page-header">
+      <p class="page-eyebrow">Rechtliche Informationen</p>
+      <h1>Datenschutzerklärung</h1>
+      <p>Stand: Februar 2026 · Verantwortlicher: Kodnyx UG (i.G.), Tunnelstr. 45, 10245 Berlin</p>
+    </div>
+
+    <div class="toc">
+      <h2>Inhalt</h2>
+      <ol>
+        <li><a href="#verantwortlicher">Verantwortlicher</a></li>
+        <li><a href="#grundsaetze">Grundsätze der Datenverarbeitung</a></li>
+        <li><a href="#website">Aufruf der Website</a></li>
+        <li><a href="#analytics">Google Analytics</a></li>
+        <li><a href="#youtube">YouTube (Videoeinbettung)</a></li>
+        <li><a href="#kontakt">Kontaktaufnahme per E-Mail</a></li>
+        <li><a href="#rechte">Ihre Rechte</a></li>
+        <li><a href="#speicherdauer">Speicherdauer</a></li>
+        <li><a href="#aenderungen">Änderungen</a></li>
+      </ol>
+    </div>
+
+    <!-- 1 -->
+    <div class="ds-section" id="verantwortlicher">
+      <h2>1. Verantwortlicher</h2>
+      <p>Verantwortlicher im Sinne der DSGVO für die Verarbeitung personenbezogener Daten auf dieser Website ist:</p>
+      <p>
+        Kodnyx UG (haftungsbeschränkt) – in Gründung<br>
+        Tunnelstr. 45, 10245 Berlin<br>
+        E-Mail: <a href="/cdn-cgi/l/email-protection#6b0f1e120c1e2b00040f05121345080406"><span class="__cf_email__" data-cfemail="781c0d011f0d3813171c160100561b1715">[email&#160;protected]</span></a>
+      </p>
+    </div>
+
+    <!-- 2 -->
+    <div class="ds-section" id="grundsaetze">
+      <h2>2. Grundsätze der Datenverarbeitung</h2>
+      <p>Wir verarbeiten personenbezogene Daten nur, soweit dies zur Bereitstellung der Website und unserer Dienste erforderlich ist oder Sie ausdrücklich eingewilligt haben. Rechtsgrundlagen sind insbesondere Art. 6 Abs. 1 lit. b, f DSGVO sowie, soweit Einwilligungen erforderlich sind, Art. 6 Abs. 1 lit. a DSGVO.</p>
+    </div>
+
+    <!-- 3 -->
+    <div class="ds-section" id="website">
+      <h2>3. Aufruf der Website</h2>
+      <p>Beim Abrufen unserer Website werden durch den Browser automatisch folgende Daten an unseren Server übermittelt und in Server-Logfiles gespeichert:</p>
+      <ul>
+        <li>IP-Adresse (anonymisiert)</li>
+        <li>Datum und Uhrzeit der Anfrage</li>
+        <li>Browsertyp und -version</li>
+        <li>Betriebssystem</li>
+        <li>Referrer-URL</li>
+      </ul>
+      <p>Diese Daten sind technisch notwendig für die Auslieferung der Website (Art. 6 Abs. 1 lit. f DSGVO) und werden nicht mit anderen Datenquellen zusammengeführt. Die Website wird über GitHub Pages gehostet. Anbieter: GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, USA. Die Datenübertragung in die USA erfolgt auf Basis von Standardvertragsklauseln (Art. 46 Abs. 2 lit. c DSGVO).</p>
+    </div>
+
+    <!-- 4 -->
+    <div class="ds-section" id="analytics">
+      <h2>4. Google Analytics</h2>
+      <p>Diese Website verwendet Google Analytics, einen Webanalysedienst der Google Ireland Limited, Gordon House, Barrow Street, Dublin 4, Irland („Google").</p>
+      <h3>Was wird erfasst?</h3>
+      <p>Google Analytics verwendet Cookies und ähnliche Technologien, die eine Analyse der Benutzung der Website ermöglichen. Die dabei erzeugten Informationen werden in der Regel an einen Server von Google in den USA übertragen und dort gespeichert. Wir haben die IP-Anonymisierung aktiviert, sodass Ihre IP-Adresse vor der Übermittlung gekürzt wird.</p>
+      <h3>Rechtsgrundlage &amp; Einwilligung</h3>
+      <div class="info-box">
+        <p>Die Nutzung von Google Analytics erfolgt auf Grundlage Ihrer Einwilligung gemäß Art. 6 Abs. 1 lit. a DSGVO i.V.m. § 25 Abs. 1 TTDSG. Sie können Ihre Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen.</p>
+      </div>
+      <h3>Widerspruch / Opt-Out</h3>
+      <p>Sie können die Speicherung von Cookies durch eine entsprechende Einstellung Ihrer Browser-Software verhindern. Sie können darüber hinaus die Erfassung der durch das Cookie erzeugten und auf Ihre Nutzung der Website bezogenen Daten (inkl. Ihrer IP-Adresse) an Google sowie die Verarbeitung dieser Daten durch Google verhindern, indem Sie das Browser-Add-on herunterladen und installieren: <a href="https://tools.google.com/dlpage/gaoptout" target="_blank" rel="noopener noreferrer">tools.google.com/dlpage/gaoptout</a>.</p>
+      <p>Weitere Informationen zum Datenschutz bei Google finden Sie unter: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>.</p>
+    </div>
+
+    <!-- 5 -->
+    <div class="ds-section" id="youtube">
+      <h2>5. YouTube (Videoeinbettung)</h2>
+      <p>Auf dieser Website sind Videos der YouTube LLC, 901 Cherry Ave., San Bruno, CA 94066, USA, eingebettet. Beim Abspielen eines Videos wird eine Verbindung zu den Servern von YouTube hergestellt. Dabei kann YouTube Informationen über Ihr Nutzerverhalten erfassen.</p>
+      <p>Wenn Sie in Ihrem YouTube-Konto eingeloggt sind, ermöglichen Sie YouTube, Ihr Surfverhalten direkt Ihrem persönlichen Profil zuzuordnen. Die Einbettung erfolgt auf Grundlage von Art. 6 Abs. 1 lit. f DSGVO (berechtigtes Interesse an ansprechender Darstellung unserer Inhalte). Weitere Informationen: <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">policies.google.com/privacy</a>.</p>
+    </div>
+
+    <!-- 6 -->
+    <div class="ds-section" id="kontakt">
+      <h2>6. Kontaktaufnahme per E-Mail</h2>
+      <p>Wenn Sie uns per E-Mail kontaktieren, werden die von Ihnen übermittelten Daten (Ihre E-Mail-Adresse sowie Inhalt und Metadaten der Nachricht) zum Zweck der Bearbeitung Ihrer Anfrage gespeichert. Rechtsgrundlage ist Art. 6 Abs. 1 lit. b bzw. lit. f DSGVO. Diese Daten geben wir nicht ohne Ihre Einwilligung weiter.</p>
+    </div>
+
+    <!-- 7 -->
+    <div class="ds-section" id="rechte">
+      <h2>7. Ihre Rechte</h2>
+      <p>Sie haben gegenüber uns folgende Rechte hinsichtlich der Sie betreffenden personenbezogenen Daten:</p>
+      <ul>
+        <li>Recht auf Auskunft (Art. 15 DSGVO)</li>
+        <li>Recht auf Berichtigung (Art. 16 DSGVO)</li>
+        <li>Recht auf Löschung (Art. 17 DSGVO)</li>
+        <li>Recht auf Einschränkung der Verarbeitung (Art. 18 DSGVO)</li>
+        <li>Recht auf Datenübertragbarkeit (Art. 20 DSGVO)</li>
+        <li>Recht auf Widerspruch gegen die Verarbeitung (Art. 21 DSGVO)</li>
+        <li>Recht auf Widerruf einer erteilten Einwilligung (Art. 7 Abs. 3 DSGVO)</li>
+      </ul>
+      <p>Zur Ausübung Ihrer Rechte wenden Sie sich bitte an: <a href="/cdn-cgi/l/email-protection#bedacbc7d9cbfed5d1dad0c7c690ddd1d3"><span class="__cf_email__" data-cfemail="f793828e9082b79c9893998e8fd994989a">[email&#160;protected]</span></a></p>
+      <p>Unbeschadet anderweitiger verwaltungsrechtlicher oder gerichtlicher Rechtsbehelfe steht Ihnen das Recht auf Beschwerde bei einer Datenschutz-Aufsichtsbehörde zu. Die zuständige Aufsichtsbehörde für Berlin ist die Berliner Beauftragte für Datenschutz und Informationsfreiheit: <a href="https://www.datenschutz-berlin.de" target="_blank" rel="noopener noreferrer">datenschutz-berlin.de</a>.</p>
+    </div>
+
+    <!-- 8 -->
+    <div class="ds-section" id="speicherdauer">
+      <h2>8. Speicherdauer</h2>
+      <p>Wir speichern personenbezogene Daten nur so lange, wie es für den jeweiligen Verarbeitungszweck erforderlich ist oder gesetzliche Aufbewahrungspflichten bestehen. Google-Analytics-Daten werden nach 14 Monaten automatisch gelöscht.</p>
+    </div>
+
+    <!-- 9 -->
+    <div class="ds-section" id="aenderungen">
+      <h2>9. Änderungen dieser Datenschutzerklärung</h2>
+      <p>Wir behalten uns vor, diese Datenschutzerklärung anzupassen, um sie stets den aktuellen rechtlichen Anforderungen anzupassen oder Änderungen unserer Leistungen umzusetzen. Die jeweils aktuelle Version gilt für Ihren erneuten Besuch.</p>
+    </div>
+
+    <hr class="divider" />
+
+    <div class="ds-section">
+      <h2>Weiterführend</h2>
+      <p><a href="imprint.ht
