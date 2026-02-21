@@ -25,7 +25,7 @@
 |---|---|---|---|
 | Eyebrow | Electrical Architecture Optimisation | Elektrische Architektur Optimierung | |
 | H1 | Unlock up to **35% electricity cost savings** in your next project | Bis zu **35% Stromkosten Einsparung** in Ihrem nächsten Projekt | ✓ SOURCE |
-| Subheadline | Kodnyx optimises AC, DC and hybrid electrical layouts in industrial facilities. | Kodnyx optimiert AC-, DC- und hybride Elektroanlagen in Industriegebäuden. | ⚠ REVIEW |
+| Subheadline | Kodnyx optimises AC, DC and hybrid electrical layouts for Commercial, Industrial, and Data Center infrastructure. | Kodnyx optimiert AC-, DC- und hybride Elektroanlagen für Gewerbe-, Industriekunden und Data Center. | ⚠ REVIEW |
 | Primary CTA | Analyse your project | Projekt analysieren | |
 | Video button | Watch 30-sec explainer | kurzes Erklärvideo ansehen | |
 
@@ -45,7 +45,7 @@
 |---|---|---|---|
 | Section label | The Problem | Das Problem | |
 | H2 | Electrical architecture is the largest untapped efficiency lever | Elektrische Architektur ist der größte ungenutzte Effizienz­hebel | ✓ SOURCE |
-| Body | Industrial facilities are still designed around legacy AC paradigms. Yet most machines run internally on DC. The result: structural losses that nobody touches — because the tools and methods to address them haven't existed. | Industrieanlagen werden noch immer nach veralteten AC-Paradigmen geplant. Dabei laufen die meisten Maschinen mittlerweile intern mit DC. Das Ergebnis: Strukturelle Verluste, die niemand angeht — weil die Methoden und Werkzeuge dafür bisher fehlten. | ⚠ REVIEW |
+| Body | Industrial / commercial facilities and data centers are still designed around legacy AC paradigms. Yet most machines run internally on DC. The result: structural losses that nobody touches — because the tools and methods to address them haven't existed. | Industrieanlagen, Gewerbeeinheiten und Data Center werden noch immer nach veralteten AC-Paradigmen geplant. Dabei laufen die meisten Maschinen mittlerweile intern mit DC. Das Ergebnis: Strukturelle Verluste, die niemand angeht — weil die Methoden und Werkzeuge dafür bisher fehlten. | ⚠ REVIEW |
 
 ### Problem Cards
 
@@ -166,7 +166,7 @@
 |---|---|---|---|
 | Section label | About | Über uns | |
 | H2 | Building the category of electrical architecture optimisation | Wir bauen die Kategorie der elektrischen Architekturoptimierung | ✓ SOURCE |
-| Body | Kodnyx develops methods and tools for optimising electrical architecture in industrial facilities. The founding team combines expertise in electrical power systems, system modelling and industrial deployment. | Kodnyx entwickelt Methoden und Werkzeuge zur Optimierung elektrischer Architekturen in Industriegebäuden. Das Gründerteam vereint Expertise in elektrischen Energiesystemen, Systemmodellierung und industrieller Umsetzung. | ✓ SOURCE |
+| Body | Kodnyx develops methods and tools for optimising electrical architecture in industrial / commercial facilities and data centers. The founding team combines expertise in electrical power systems, system modelling and industrial deployment. | Kodnyx entwickelt Methoden und Werkzeuge zur Optimierung elektrischer Architekturen in Industrie/- Gewerbegebäuden und Data Center. Das Gründerteam vereint Expertise in elektrischen Energiesystemen, Systemmodellierung und industrieller Umsetzung. | ✓ SOURCE |
 | Tag 1 | Berlin-based | Berlin-based | |
 | Tag 2 | Engineering-driven | Engineering-getrieben | |
 | Tag 3 | Deep-tech B2B | Deep-Tech B2B | |
