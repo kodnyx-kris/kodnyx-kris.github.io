@@ -567,20 +567,24 @@
       margin-bottom: 32px;
     }
 
-    /* ─── CALCULATOR TEASER ──────────────────────────────────── */
-    .calculator {
-      background: var(--white);
-    }
+    /* ─── CALCULATOR ─────────────────────────────────────────── */
+    .calculator { background: var(--white); }
+
     .calculator-inner {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      align-items: center;
+      gap: 72px;
+      align-items: start;
     }
+
+    /* ── Left column: intro text ── */
+    .calc-intro { padding-top: 4px; }
+
+    /* ── Right column: the card ── */
     .calc-card {
       background: var(--teal);
       border-radius: 14px;
-      padding: 40px;
+      padding: 36px 40px 40px;
       position: relative;
       overflow: hidden;
     }
@@ -590,85 +594,191 @@
       top: -60px; right: -60px;
       width: 200px; height: 200px;
       border-radius: 50%;
-      background: rgba(95,183,176,0.1);
+      background: rgba(95,183,176,0.08);
+      pointer-events: none;
     }
-    .calc-card::after {
-      content: '';
-      position: absolute;
-      bottom: -40px; left: -40px;
-      width: 150px; height: 150px;
-      border-radius: 50%;
-      background: rgba(247,150,70,0.08);
-    }
-    .calc-fields {
-      position: relative;
-      z-index: 1;
-    }
-    .calc-field {
-      margin-bottom: 16px;
-    }
-    .calc-field label {
-      display: block;
-      font-size: 0.78rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      color: rgba(255,255,255,0.6);
-      margin-bottom: 6px;
-      text-transform: uppercase;
-    }
-    .calc-field .field-value {
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.15);
-      border-radius: 6px;
-      padding: 11px 16px;
-      color: rgba(255,255,255,0.4);
-      font-size: 0.9rem;
-      font-family: var(--font);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .calc-field .field-value .lock {
-      margin-left: auto;
-      opacity: 0.4;
-      font-size: 0.8rem;
-    }
-    .calc-output {
-      margin-top: 24px;
-      padding-top: 24px;
-      border-top: 1px solid rgba(255,255,255,0.1);
+
+    /* ── Form fields ── */
+    .calc-form { position: relative; z-index: 1; }
+
+    .calc-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      position: relative;
-      z-index: 1;
+      gap: 14px;
     }
-    .calc-output-item {
-      background: rgba(255,255,255,0.06);
-      border-radius: 8px;
-      padding: 16px;
-      text-align: center;
-    }
-    .calc-output-number {
-      font-size: 1.6rem;
-      font-weight: 800;
-      color: var(--teal-light);
-      filter: blur(5px);
-    }
-    .calc-output-label {
-      font-size: 0.72rem;
-      color: rgba(255,255,255,0.5);
-      margin-top: 4px;
-      text-transform: uppercase;
+
+    .calc-field { margin-bottom: 14px; }
+    .calc-field.full { grid-column: 1 / -1; }
+
+    .calc-field label {
+      display: block;
+      font-size: 0.73rem;
+      font-weight: 700;
       letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 6px;
     }
-    .calc-unlock {
+
+    .calc-field input[type="number"],
+    .calc-field select {
+      width: 100%;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 6px;
+      padding: 10px 14px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .calc-field input[type="number"]:focus,
+    .calc-field select:focus {
+      border-color: var(--teal-light);
+      background: rgba(255,255,255,0.13);
+    }
+    .calc-field input[type="number"]::placeholder { color: rgba(255,255,255,0.3); }
+    .calc-field input[type="number"]::-webkit-inner-spin-button,
+    .calc-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .calc-field select option { background: var(--teal); color: var(--white); }
+
+    /* select arrow */
+    .calc-select-wrap { position: relative; }
+    .calc-select-wrap::after {
+      content: '';
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      border-style: solid;
+      border-width: 5px 4px 0 4px;
+      border-color: rgba(255,255,255,0.5) transparent transparent transparent;
+      pointer-events: none;
+    }
+
+    /* ── Slider fields ── */
+    .calc-slider-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .calc-slider-wrap input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 4px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.18);
+      outline: none;
+      border: none;
+      padding: 0;
+    }
+    .calc-slider-wrap input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      cursor: pointer;
+      border: 2px solid var(--white);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+    }
+    .calc-slider-wrap input[type="range"]::-moz-range-thumb {
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--teal-light);
+      cursor: pointer;
+      border: 2px solid var(--white);
+    }
+    .calc-slider-val {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--teal-light);
+      min-width: 28px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .calc-slider-hints {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 3px;
+    }
+    .calc-slider-hints span {
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.35);
+    }
+
+    /* ── Demand charge toggle ── */
+    .calc-toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .calc-toggle-row label {
+      font-size: 0.73rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      cursor: pointer;
+      user-select: none;
+    }
+    .toggle-switch {
       position: relative;
-      z-index: 1;
-      margin-top: 20px;
-      text-align: center;
+      width: 36px; height: 20px;
+      flex-shrink: 0;
     }
-    .calc-unlock-btn {
+    .toggle-switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-track {
+      position: absolute;
+      inset: 0;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.18);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle-track::after {
+      content: '';
+      position: absolute;
+      left: 3px; top: 3px;
+      width: 14px; height: 14px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.6);
+      transition: transform 0.2s, background 0.2s;
+    }
+    .toggle-switch input:checked + .toggle-track { background: var(--teal-light); }
+    .toggle-switch input:checked + .toggle-track::after {
+      transform: translateX(16px);
+      background: var(--white);
+    }
+    #demand-field { display: none; }
+    #demand-field.visible { display: block; }
+
+    /* ── Divider ── */
+    .calc-divider {
+      border: none;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      margin: 18px 0;
+    }
+
+    /* ── Error messages ── */
+    .calc-error {
+      font-size: 0.72rem;
+      color: #ffb085;
+      margin-top: 4px;
+      display: none;
+    }
+    .calc-error.visible { display: block; }
+    .calc-field.has-error input,
+    .calc-field.has-error select {
+      border-color: #ffb085;
+    }
+
+    /* ── Calculate button ── */
+    .calc-submit-btn {
       width: 100%;
       background: var(--orange);
       color: var(--white);
@@ -679,13 +789,141 @@
       border-radius: 7px;
       border: none;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: background 0.2s, transform 0.2s;
+      position: relative;
+      z-index: 1;
+      margin-top: 4px;
     }
-    .calc-unlock-btn:hover { background: #e07e2e; }
-    .calc-unlock-note {
+    .calc-submit-btn:hover { background: #e07e2e; transform: translateY(-1px); }
+    .calc-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* ── Result panel ── */
+    .calc-result {
+      display: none;
+      margin-top: 20px;
+      padding-top: 20px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      position: relative;
+      z-index: 1;
+      animation: fadeUp 0.4s ease forwards;
+    }
+    .calc-result.visible { display: block; }
+
+    .calc-result-headline {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+    .calc-result-pct {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--white);
+      line-height: 1;
+      letter-spacing: -0.03em;
+    }
+    .calc-result-label {
       font-size: 0.75rem;
-      color: rgba(255,255,255,0.4);
-      margin-top: 8px;
+      color: rgba(255,255,255,0.55);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+    .calc-result-scenario {
+      font-size: 0.75rem;
+      color: var(--teal-light);
+      margin-top: 3px;
+    }
+
+    /* ── Contact form (revealed after result) ── */
+    .calc-contact-prompt {
+      background: rgba(255,255,255,0.07);
+      border-radius: 8px;
+      padding: 18px 20px;
+      margin-top: 16px;
+    }
+    .calc-contact-prompt p {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.5;
+      margin-bottom: 14px;
+    }
+    .calc-contact-field { margin-bottom: 10px; }
+    .calc-contact-field input {
+      width: 100%;
+      background: rgba(255,255,255,0.09);
+      border: 1px solid rgba(255,255,255,0.18);
+      border-radius: 6px;
+      padding: 9px 13px;
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .calc-contact-field input:focus { border-color: var(--teal-light); }
+    .calc-contact-field input::placeholder { color: rgba(255,255,255,0.28); }
+    .calc-contact-field .calc-error { margin-top: 3px; }
+
+    .calc-send-btn {
+      width: 100%;
+      background: var(--teal-light);
+      color: var(--teal);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 700;
+      padding: 12px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      margin-top: 4px;
+    }
+    .calc-send-btn:hover { background: #4ea9a2; transform: translateY(-1px); }
+    .calc-send-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    .calc-success {
+      display: none;
+      text-align: center;
+      padding: 20px;
+      animation: fadeUp 0.4s ease forwards;
+    }
+    .calc-success.visible { display: block; }
+    .calc-success-icon {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+    .calc-success p {
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+    }
+    .calc-success strong { color: var(--teal-light); }
+
+    .calc-note {
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.3);
+      text-align: center;
+      margin-top: 10px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── Loading spinner ── */
+    .calc-spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: var(--white);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      .calculator-inner { grid-template-columns: 1fr; gap: 40px; }
+      .calc-row { grid-template-columns: 1fr; }
     }
 
     /* ─── ABOUT ──────────────────────────────────────────────── */
@@ -1085,8 +1323,10 @@
             </div>
           </div>
 
+          <!-- Case study PDF link — uncomment when PDF is ready
           <a href="#" class="reference-cta" data-lang="en">View full case study (PDF)</a>
           <a href="#" class="reference-cta" data-lang="de">Vollständige Fallstudie (PDF)</a>
+          -->
         </div>
 
         <div class="references-context reveal" style="transition-delay:0.15s">
@@ -1119,57 +1359,170 @@
     </div>
   </section>
 
-  <!-- ═══ CALCULATOR TEASER ════════════════════════════════════ -->
+  <!-- ═══ CALCULATOR ══════════════════════════════════════════ -->
   <section class="calculator" id="calculator">
     <div class="container">
       <div class="calculator-inner">
-        <div class="reveal">
+
+        <!-- Left: intro -->
+        <div class="calc-intro reveal">
           <p class="section-label" data-lang="en">Savings Calculator</p>
-          <p class="section-label" data-lang="de">Energiespar Rechner</p>
+          <p class="section-label" data-lang="de">Energiespar-Rechner</p>
           <h2 class="section-title" data-lang="en">Quantify the opportunity</h2>
           <h2 class="section-title" data-lang="de">Das Potenzial quantifizieren</h2>
-          <p class="section-body" data-lang="en">Our energy savings calculator gives you a first-pass estimate of optimisation potential based on five facility parameters. Enter your inputs and get a project-specific savings range and ROI projection.</p>
-          <p class="section-body" data-lang="de">Unser Energiespar Rechner liefert eine erste Schätzung des Optimierungspotenzials auf Basis von fünf Anlagenparametern. Geben Sie Ihre Werte ein und erhalten Sie eine projektspezifische Einsparspanne und ROI-Prognose.</p>
-          <p class="section-body" style="margin-top:16px; font-size:0.88rem" data-lang="en">The full calculator is available to engineering planners and project teams. Leave your contact to receive access and the detailed methodology.</p>
-          <p class="section-body" style="margin-top:16px; font-size:0.88rem" data-lang="de">Der vollständige Kalkulator steht Planungsbüros und Projektteams zur Verfügung. Hinterlassen Sie Ihre Kontaktdaten für den Zugang und die detaillierte Methodik.</p>
+          <p class="section-body" data-lang="en">Enter your facility parameters and get a project-specific savings estimate in seconds. The full breakdown — all saving components, CO₂ impact, and financial summary — is delivered as a PDF to your inbox.</p>
+          <p class="section-body" data-lang="de">Geben Sie Ihre Anlagenparameter ein und erhalten Sie in Sekunden eine projektspezifische Einsparpotenzial-Schätzung. Die vollständige Aufschlüsselung — alle Einsparkomponenten, CO₂-Bilanz und Finanzzusammenfassung — erhalten Sie als PDF in Ihrem Postfach.</p>
+          <p class="section-body" style="margin-top:14px;font-size:0.88rem;" data-lang="en">For electrical engineering planners and project teams. No spam.</p>
+          <p class="section-body" style="margin-top:14px;font-size:0.88rem;" data-lang="de">Für Elektro­planer und Projektteams. Kein Spam.</p>
         </div>
+
+        <!-- Right: calculator card -->
         <div class="calc-card reveal" style="transition-delay:0.15s">
-          <div class="calc-fields">
-            <div class="calc-field">
-              <label data-lang="en">Annual energy consumption (MWh)</label>
-              <label data-lang="de">Jährlicher Energieverbrauch (MWh)</label>
-              <div class="field-value">— <span class="lock">🔒</span></div>
-            </div>
-            <div class="calc-field">
-              <label data-lang="en">Share of DC-compatible loads (%)</label>
-              <label data-lang="de">Anteil DC-kompatibler Lasten (%)</label>
-              <div class="field-value">— <span class="lock">🔒</span></div>
-            </div>
-            <div class="calc-field">
-              <label data-lang="en">Current architecture type</label>
-              <label data-lang="de">Aktueller Architekturtyp</label>
-              <div class="field-value">— <span class="lock">🔒</span></div>
-            </div>
-            <div class="calc-output">
-              <div class="calc-output-item">
-                <div class="calc-output-number">—%</div>
-                <div class="calc-output-label" data-lang="en">Savings range</div>
-                <div class="calc-output-label" data-lang="de">Einsparpotenzial</div>
+          <form class="calc-form" id="calc-form" novalidate>
+
+            <!-- Row 1: consumption + price -->
+            <div class="calc-row">
+              <div class="calc-field" id="field-E_annual">
+                <label data-lang="en">Annual consumption (kWh/y)</label>
+                <label data-lang="de">Jahresverbrauch (kWh/y)</label>
+                <input type="number" id="inp-E_annual" value="60000" min="1" step="1000" placeholder="60000" />
+                <div class="calc-error" id="err-E_annual"></div>
               </div>
-              <div class="calc-output-item">
-                <div class="calc-output-number">—x</div>
-                <div class="calc-output-label" data-lang="en">ROI estimate</div>
-                <div class="calc-output-label" data-lang="de">ROI-Schätzung</div>
+              <div class="calc-field" id="field-c_kWh">
+                <label data-lang="en">Energy price (€/kWh)</label>
+                <label data-lang="de">Energiepreis (€/kWh)</label>
+                <input type="number" id="inp-c_kWh" value="0.29" min="0.01" step="0.01" placeholder="0.29" />
+                <div class="calc-error" id="err-c_kWh"></div>
               </div>
             </div>
-            <div class="calc-unlock">
-              <button class="calc-unlock-btn" data-lang="en">Calculate →</button>
-              <button class="calc-unlock-btn" data-lang="de">Berechnen →</button>
-              <p class="calc-unlock-note" data-lang="en">For Energy Efficiency Providers and project planners · No spam</p>
-              <p class="calc-unlock-note" data-lang="de">Für Energieeffizienz Anbieter und Projektplaner · Kein Spam</p>
+
+            <!-- Row 2: PV + scenario -->
+            <div class="calc-row">
+              <div class="calc-field" id="field-PV_kWp">
+                <label data-lang="en">PV system (kWp, 0 = none)</label>
+                <label data-lang="de">PV-Anlage (kWp, 0 = keine)</label>
+                <input type="number" id="inp-PV_kWp" value="30" min="0" step="5" placeholder="0" />
+                <div class="calc-error" id="err-PV_kWp"></div>
+              </div>
+              <div class="calc-field" id="field-scenario">
+                <label data-lang="en">Scenario</label>
+                <label data-lang="de">Szenario</label>
+                <div class="calc-select-wrap">
+                  <select id="inp-scenario">
+                    <option value="Conservative" data-lang="en">Conservative</option>
+                    <option value="Conservative" data-lang="de">Konservativ</option>
+                    <option value="Expected" selected data-lang="en">Expected</option>
+                    <option value="Expected" data-lang="de">Erwartet</option>
+                    <option value="Ceiling" data-lang="en">Ceiling (Optimistic)</option>
+                    <option value="Ceiling" data-lang="de">Optimistisch</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Slider: load peakiness -->
+            <div class="calc-field full">
+              <label data-lang="en">Load peakiness (p)</label>
+              <label data-lang="de">Last-Spitzigkeit (p)</label>
+              <div class="calc-slider-wrap">
+                <input type="range" id="inp-p" min="0" max="1" step="0.05" value="0.55" />
+                <span class="calc-slider-val" id="val-p">0.55</span>
+              </div>
+              <div class="calc-slider-hints">
+                <span data-lang="en">Flat (constant)</span>
+                <span data-lang="de">Gleichmäßig</span>
+                <span data-lang="en">Peaky (high peaks)</span>
+                <span data-lang="de">Sehr spitzig</span>
+              </div>
+            </div>
+
+            <!-- Slider: automation / regen -->
+            <div class="calc-field full">
+              <label data-lang="en">Automation / regen level (a)</label>
+              <label data-lang="de">Automatisierungs-/Regen-Niveau (a)</label>
+              <div class="calc-slider-wrap">
+                <input type="range" id="inp-a" min="0" max="1" step="0.05" value="0.70" />
+                <span class="calc-slider-val" id="val-a">0.70</span>
+              </div>
+              <div class="calc-slider-hints">
+                <span data-lang="en">Low</span>
+                <span data-lang="de">Niedrig</span>
+                <span data-lang="en">High</span>
+                <span data-lang="de">Hoch</span>
+              </div>
+            </div>
+
+            <hr class="calc-divider" />
+
+            <!-- Demand charge toggle -->
+            <div class="calc-toggle-row">
+              <label class="toggle-switch" for="inp-KnowDemand" aria-label="Demand charge known">
+                <input type="checkbox" id="inp-KnowDemand" checked />
+                <span class="toggle-track"></span>
+              </label>
+              <label for="inp-KnowDemand" data-lang="en">I know my demand charge</label>
+              <label for="inp-KnowDemand" data-lang="de">Ich kenne meinen Leistungspreis</label>
+            </div>
+            <div class="calc-field full" id="demand-field" style="display:block">
+              <label data-lang="en">Demand charge (€/kW·month)</label>
+              <label data-lang="de">Leistungspreis (€/kW·Monat)</label>
+              <input type="number" id="inp-DemandCharge" value="10" min="0.01" step="1" placeholder="10" />
+              <div class="calc-error" id="err-DemandCharge"></div>
+            </div>
+
+            <!-- Calculate button -->
+            <button type="submit" class="calc-submit-btn" id="calc-submit-btn">
+              <span data-lang="en">Calculate</span>
+              <span data-lang="de">Berechnen</span>
+            </button>
+            <p class="calc-note" data-lang="en">For electrical engineering planners · No spam</p>
+            <p class="calc-note" data-lang="de">Für Elektroplaner und Projektteams · Kein Spam</p>
+
+          </form>
+
+          <!-- Result panel (shown after calculation) -->
+          <div class="calc-result" id="calc-result">
+            <div class="calc-result-headline">
+              <div class="calc-result-pct" id="result-pct">—</div>
+              <div class="calc-result-label" data-lang="en">Annual electricity savings potential</div>
+              <div class="calc-result-label" data-lang="de">Jährliches Stromeinsparungspotenzial</div>
+              <div class="calc-result-scenario" id="result-disclaimer"></div>
+            </div>
+
+            <!-- Contact form to receive full PDF -->
+            <div class="calc-contact-prompt" id="calc-contact-prompt">
+              <p data-lang="en">Get the full breakdown — conversion, recuperation, PV, peak savings, CO₂ — as a PDF in your inbox.</p>
+              <p data-lang="de">Erhalten Sie die vollständige Aufschlüsselung — Umwandlung, Rekuperation, PV, Spitzenlast, CO₂ — als PDF in Ihrem Postfach.</p>
+              <div class="calc-contact-field">
+                <input type="text" id="inp-name" placeholder="Full name / Vollständiger Name" autocomplete="name" />
+                <div class="calc-error" id="err-name"></div>
+              </div>
+              <div class="calc-contact-field">
+                <input type="email" id="inp-email" placeholder="Work email / Geschäftliche E-Mail" autocomplete="email" />
+                <div class="calc-error" id="err-email"></div>
+              </div>
+              <div class="calc-contact-field">
+                <input type="text" id="inp-company" placeholder="Company / Unternehmen" autocomplete="organization" />
+                <div class="calc-error" id="err-company"></div>
+              </div>
+              <div class="calc-contact-field">
+                <input type="text" id="inp-role" placeholder="Your role / Ihre Funktion" />
+              </div>
+              <button type="button" class="calc-send-btn" id="calc-send-btn">
+                <span data-lang="en">Send my report</span>
+                <span data-lang="de">Bericht zusenden</span>
+              </button>
+            </div>
+
+            <!-- Success state -->
+            <div class="calc-success" id="calc-success">
+              <div class="calc-success-icon">✓</div>
+              <p data-lang="en">Done — <strong>check your inbox.</strong><br>The full breakdown is on its way.</p>
+              <p data-lang="de">Gesendet — <strong>prüfen Sie Ihr Postfach.</strong><br>Die vollständige Aufschlüsselung ist unterwegs.</p>
             </div>
           </div>
-        </div>
+
+        </div><!-- /calc-card -->
       </div>
     </div>
   </section>
@@ -1209,7 +1562,7 @@
                 <img src="Carbon13_logo.png" alt="Carbon13" style="height:28px;width:auto;opacity:0.75;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" />
               </a>
               <a href="https://berlin.impacthub.net/" target="_blank" rel="noopener noreferrer" title="Impact Hub Berlin">
-                <img src="impacht_hub.png" alt="Impact Hub Berlin" style="height:28px;width:auto;opacity:0.75;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" />
+                <img src="impact_hub.png" alt="Impact Hub Berlin" style="height:28px;width:auto;opacity:0.75;transition:opacity 0.2s;" onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.75'" />
               </a>
             </div>
           </div>
@@ -1368,5 +1721,323 @@
 
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
   </script>
+
+  <!-- ═══ COOKIE BANNER ══════════════════════════════════════ -->
+  <style>
+    #cookie-banner {
+      display: none;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 300;
+      background: var(--teal);
+      padding: 14px 5%;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.2);
+    }
+    #cookie-banner.show { display: flex; }
+    #cookie-banner p {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.85);
+      margin: 0;
+      max-width: 680px;
+    }
+    #cookie-banner a {
+      color: var(--teal-light);
+      text-decoration: underline;
+    }
+    .cookie-btns { display: flex; gap: 10px; flex-shrink: 0; }
+    .cookie-btn-accept {
+      background: var(--orange);
+      color: white;
+      border: none;
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .cookie-btn-decline {
+      background: none;
+      color: rgba(255,255,255,0.6);
+      border: 1px solid rgba(255,255,255,0.25);
+      font-family: var(--font);
+      font-size: 0.82rem;
+      font-weight: 600;
+      padding: 8px 18px;
+      border-radius: 5px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+  </style>
+
+  <div id="cookie-banner">
+    <p>We use Google Analytics to understand how visitors use this site. No personal data is sold. <a href="datenschutz.html">Privacy policy</a></p>
+    <div class="cookie-btns">
+      <button class="cookie-btn-accept" id="cookie-accept">OK, got it</button>
+      <button class="cookie-btn-decline" id="cookie-decline">Decline</button>
+    </div>
+  </div>
+
+  <script>
+    // ─── COOKIE CONSENT ───────────────────────────────────────
+    const cookieBanner = document.getElementById('cookie-banner');
+
+    if (!localStorage.getItem('cookie-consent')) {
+      cookieBanner.classList.add('show');
+    }
+
+    function setConsent(value) {
+      localStorage.setItem('cookie-consent', value);
+      cookieBanner.classList.remove('show');
+      if (value === 'declined') {
+        window['ga-disable-G-WJ4861VRQT'] = true;
+      }
+    }
+
+    document.getElementById('cookie-accept').addEventListener('click', () => setConsent('accepted'));
+    document.getElementById('cookie-decline').addEventListener('click', () => setConsent('declined'));
+  </script>
+
+  <!-- ═══ CALCULATOR SCRIPT ══════════════════════════════════ -->
+  <script>
+    // ─── CONFIG ───────────────────────────────────────────────
+    const WORKER_URL = 'https://kodnyx-calculator.kristoffer-285.workers.dev';
+    // Update to api.kodnyx.com once custom domain is configured in Cloudflare
+
+    // ─── ELEMENT REFS ─────────────────────────────────────────
+    const form         = document.getElementById('calc-form');
+    const submitBtn    = document.getElementById('calc-submit-btn');
+    const resultPanel  = document.getElementById('calc-result');
+    const resultPct    = document.getElementById('result-pct');
+    const resultDiscl  = document.getElementById('result-disclaimer');
+    const contactForm  = document.getElementById('calc-contact-prompt');
+    const sendBtn      = document.getElementById('calc-send-btn');
+    const successPanel = document.getElementById('calc-success');
+    const demandField  = document.getElementById('demand-field');
+    const demandToggle = document.getElementById('inp-KnowDemand');
+
+    // Slider live display
+    ['p', 'a'].forEach(id => {
+      const slider = document.getElementById('inp-' + id);
+      const display = document.getElementById('val-' + id);
+      slider.addEventListener('input', () => {
+        display.textContent = parseFloat(slider.value).toFixed(2);
+      });
+    });
+
+    // Demand charge toggle
+    demandToggle.addEventListener('change', () => {
+      demandField.style.display = demandToggle.checked ? 'block' : 'none';
+    });
+
+    // ─── VALIDATION (client-side mirror of Worker) ────────────
+    function getInputs() {
+      return {
+        E_annual:     parseFloat(document.getElementById('inp-E_annual').value),
+        c_kWh:        parseFloat(document.getElementById('inp-c_kWh').value),
+        PV_kWp:       parseFloat(document.getElementById('inp-PV_kWp').value),
+        p:            parseFloat(document.getElementById('inp-p').value),
+        a:            parseFloat(document.getElementById('inp-a').value),
+        KnowDemand:   demandToggle.checked,
+        DemandCharge: parseFloat(document.getElementById('inp-DemandCharge').value) || 0,
+        scenario:     document.getElementById('inp-scenario').value,
+        lang:         currentLang,
+      };
+    }
+
+    function clearErrors() {
+      document.querySelectorAll('.calc-error').forEach(el => {
+        el.textContent = '';
+        el.classList.remove('visible');
+      });
+      document.querySelectorAll('.calc-field').forEach(el => {
+        el.classList.remove('has-error');
+      });
+    }
+
+    function showError(fieldId, msg) {
+      const errEl   = document.getElementById('err-' + fieldId);
+      const fieldEl = document.getElementById('field-' + fieldId);
+      if (errEl)   { errEl.textContent = msg; errEl.classList.add('visible'); }
+      if (fieldEl) { fieldEl.classList.add('has-error'); }
+    }
+
+    const VALIDATION_MSGS = {
+      E_annual: {
+        en: 'Must be greater than 0 kWh.',
+        de: 'Muss größer als 0 kWh sein.',
+      },
+      c_kWh: {
+        en: 'Must be greater than 0 €/kWh.',
+        de: 'Muss größer als 0 €/kWh sein.',
+      },
+      PV_kWp: {
+        en: 'Cannot be negative.',
+        de: 'Darf nicht negativ sein.',
+      },
+      DemandCharge: {
+        en: 'Must be greater than 0 €/kW·month.',
+        de: 'Muss größer als 0 €/kW·Monat sein.',
+      },
+    };
+
+    function validateCalcInputs(inputs) {
+      const L = currentLang;
+      let ok = true;
+      if (!inputs.E_annual || inputs.E_annual <= 0) {
+        showError('E_annual', VALIDATION_MSGS.E_annual[L]); ok = false;
+      }
+      if (!inputs.c_kWh || inputs.c_kWh <= 0) {
+        showError('c_kWh', VALIDATION_MSGS.c_kWh[L]); ok = false;
+      }
+      if (inputs.PV_kWp < 0) {
+        showError('PV_kWp', VALIDATION_MSGS.PV_kWp[L]); ok = false;
+      }
+      if (inputs.KnowDemand && (!inputs.DemandCharge || inputs.DemandCharge <= 0)) {
+        showError('DemandCharge', VALIDATION_MSGS.DemandCharge[L]); ok = false;
+      }
+      return ok;
+    }
+
+    // ─── CALCULATE ────────────────────────────────────────────
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      clearErrors();
+      const inputs = getInputs();
+      if (!validateCalcInputs(inputs)) return;
+
+      // Show spinner
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<span class="calc-spinner"></span><span data-lang="en">Calculating…</span><span data-lang="de">Berechnung…</span>`;
+      setLang(currentLang); // re-apply lang to spinner button
+
+      try {
+        const res = await fetch(`${WORKER_URL}/calculate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(inputs),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          // Server-side validation errors
+          if (data.errors) {
+            Object.entries(data.errors).forEach(([field, msg]) => showError(field, msg));
+          }
+          return;
+        }
+
+        // Show result
+        const pct = (data.percent_save * 100).toFixed(1) + ' %';
+        resultPct.textContent = pct;
+        resultDiscl.textContent = data.disclaimer;
+        resultPanel.classList.add('visible');
+
+        // Scroll result into view on mobile
+        if (window.innerWidth < 768) {
+          resultPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        // Store inputs for submit step
+        form._lastInputs = inputs;
+
+      } catch (err) {
+        console.error('Calculate error:', err);
+        // Graceful fallback: show generic error
+        showError('E_annual', currentLang === 'de'
+          ? 'Verbindungsfehler. Bitte versuchen Sie es erneut.'
+          : 'Connection error. Please try again.');
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = `<span data-lang="en">Calculate</span><span data-lang="de">Berechnen</span>`;
+        setLang(currentLang);
+      }
+    });
+
+    // ─── SUBMIT (send report) ─────────────────────────────────
+    sendBtn.addEventListener('click', async () => {
+      // Validate contact fields
+      let ok = true;
+      const name    = document.getElementById('inp-name').value.trim();
+      const email   = document.getElementById('inp-email').value.trim();
+      const company = document.getElementById('inp-company').value.trim();
+      const role    = document.getElementById('inp-role').value.trim();
+
+      const L = currentLang;
+
+      if (!name) {
+        const el = document.getElementById('err-name');
+        el.textContent = L === 'de' ? 'Bitte geben Sie Ihren Namen ein.' : 'Please enter your name.';
+        el.classList.add('visible'); ok = false;
+      }
+      if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        const el = document.getElementById('err-email');
+        el.textContent = L === 'de' ? 'Bitte geben Sie eine gültige E-Mail-Adresse ein.' : 'Please enter a valid email.';
+        el.classList.add('visible'); ok = false;
+      }
+      if (!company) {
+        const el = document.getElementById('err-company');
+        el.textContent = L === 'de' ? 'Bitte geben Sie Ihr Unternehmen ein.' : 'Please enter your company.';
+        el.classList.add('visible'); ok = false;
+      }
+      if (!ok) return;
+
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = `<span class="calc-spinner"></span><span data-lang="en">Sending…</span><span data-lang="de">Wird gesendet…</span>`;
+      setLang(currentLang);
+
+      try {
+        const res = await fetch(`${WORKER_URL}/submit`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            inputs:  form._lastInputs,
+            contact: { name, email, company, role },
+            lang:    currentLang,
+          }),
+        });
+
+        if (res.ok) {
+          contactForm.style.display = 'none';
+          successPanel.classList.add('visible');
+        } else {
+          const data = await res.json();
+          if (data.errors) {
+            Object.entries(data.errors).forEach(([field, msg]) => {
+              const el = document.getElementById('err-' + field);
+              if (el) { el.textContent = msg; el.classList.add('visible'); }
+            });
+          }
+          sendBtn.disabled = false;
+          sendBtn.innerHTML = `<span data-lang="en">Send my report</span><span data-lang="de">Bericht zusenden</span>`;
+          setLang(currentLang);
+        }
+      } catch (err) {
+        console.error('Submit error:', err);
+        sendBtn.disabled = false;
+        sendBtn.innerHTML = `<span data-lang="en">Send my report</span><span data-lang="de">Bericht zusenden</span>`;
+        setLang(currentLang);
+        const el = document.getElementById('err-email');
+        if (el) {
+          el.textContent = L === 'de' ? 'Verbindungsfehler. Bitte versuchen Sie es erneut.' : 'Connection error. Please try again.';
+          el.classList.add('visible');
+        }
+      }
+    });
+
+    // Re-run calculate when scenario changes (if result already shown)
+    document.getElementById('inp-scenario').addEventListener('change', () => {
+      if (resultPanel.classList.contains('visible')) {
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+  </script>
+
 </body>
 </html>
