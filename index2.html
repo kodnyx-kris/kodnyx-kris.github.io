@@ -621,6 +621,7 @@
     }
 
     .calc-field input[type="number"],
+    .calc-field input[type="text"],
     .calc-field select {
       width: 100%;
       background: rgba(255,255,255,0.09);
@@ -637,14 +638,14 @@
       appearance: none;
     }
     .calc-field input[type="number"]:focus,
+    .calc-field input[type="text"]:focus,
     .calc-field select:focus {
       border-color: var(--teal-light);
       background: rgba(255,255,255,0.13);
     }
-    .calc-field input[type="number"]::placeholder { color: rgba(255,255,255,0.3); }
-    .calc-field input[type="number"]::-webkit-inner-spin-button,
-    .calc-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-    .calc-field input[type="number"] { -moz-appearance: textfield; }
+    .calc-field input[type="number"]::placeholder,
+    .calc-field input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
+
     .calc-field select option { background: var(--teal); color: var(--white); }
 
     .calc-hint {
@@ -1391,13 +1392,13 @@
               <div class="calc-field" id="field-E_annual">
                 <label data-lang="en">Annual consumption (kWh/y)</label>
                 <label data-lang="de">Jahresverbrauch (kWh/a)</label>
-                <input type="number" id="inp-E_annual" value="60000" min="1" step="1000" placeholder="60000" />
+                <input type="text" inputmode="numeric" id="inp-E_annual" value="60.000" placeholder="60000" />
                 <div class="calc-error" id="err-E_annual"></div>
               </div>
               <div class="calc-field" id="field-c_kWh">
                 <label data-lang="en">Energy price (€/kWh)</label>
                 <label data-lang="de">Energiepreis (€/kWh)</label>
-                <input type="number" id="inp-c_kWh" value="0.29" min="0.01" step="0.01" placeholder="0.29" />
+                <input type="text" inputmode="decimal" id="inp-c_kWh" value="0.29" placeholder="0.29" />
                 <div class="calc-error" id="err-c_kWh"></div>
               </div>
             </div>
@@ -1407,7 +1408,7 @@
               <div class="calc-field" id="field-PV_kWp">
                 <label data-lang="en">PV system (kWp, 0 = none)</label>
                 <label data-lang="de">PV-Anlage (kWp, 0 = keine)</label>
-                <input type="number" id="inp-PV_kWp" value="30" min="0" step="5" placeholder="0" />
+                <input type="text" inputmode="numeric" id="inp-PV_kWp" value="30" placeholder="0" />
                 <div class="calc-error" id="err-PV_kWp"></div>
               </div>
               <div class="calc-field" id="field-scenario">
@@ -1469,7 +1470,7 @@
             <div class="calc-field full" id="demand-field" style="display:block">
               <label data-lang="en">Demand charge (€/kW·month)</label>
               <label data-lang="de">Leistungspreis (€/kW · Monat)</label>
-              <input type="number" id="inp-DemandCharge" value="10" min="0.01" step="1" placeholder="10" />
+              <input type="text" inputmode="decimal" id="inp-DemandCharge" value="10" placeholder="10" />
               <div class="calc-error" id="err-DemandCharge"></div>
             </div>
 
@@ -1847,18 +1848,20 @@
     numInputIds.forEach(id => {
       const el = document.getElementById(id);
       if (!el) return;
+      // On blur: format with locale separators
       el.addEventListener('blur', () => {
-        const val = parseFloat(el.value.replace(/[^0-9.]/g, ''));
-        if (!isNaN(val)) {
+        const isDecimal = (id === 'inp-c_kWh' || id === 'inp-DemandCharge');
+        const val = isDecimal
+          ? parseDecimalInput(el.value)
+          : parseFloat(el.value.replace(/[^0-9]/g, '') || '0');
+        if (!isNaN(val) && el.value.trim() !== '') {
           const locale = currentLang === 'de' ? 'de-DE' : 'en-US';
-          const decimals = (id === 'inp-c_kWh' || id === 'inp-DemandCharge') ? 2 : 0;
+          const decimals = isDecimal ? 2 : 0;
           el.value = val.toLocaleString(locale, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
         }
       });
-      el.addEventListener('focus', () => {
-        const val = parseFloat(el.value.replace(/[^0-9.]/g, ''));
-        if (!isNaN(val)) el.value = val;
-      });
+      // On focus: just select all so user can type freely — never overwrite
+      el.addEventListener('focus', () => { el.select(); });
     });
 
     // Demand charge toggle
