@@ -580,64 +580,6 @@
     /* ── Left column: intro text ── */
     .calc-intro { padding-top: 4px; }
 
-    /* ── Coming Soon overlay ──────────────────────────────────────────── */
-    .calc-coming-soon-wrap {
-      position: relative;
-    }
-    .calc-coming-soon-overlay {
-      position: absolute;
-      inset: 0;
-      z-index: 10;
-      background: rgba(14, 76, 82, 0.82);
-      backdrop-filter: blur(3px);
-      -webkit-backdrop-filter: blur(3px);
-      border-radius: 14px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 16px;
-      text-align: center;
-      padding: 40px 24px;
-    }
-    .calc-cs-badge {
-      background: #F79646;
-      color: #fff;
-      font-weight: 700;
-      font-size: 11px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 5px 14px;
-      border-radius: 20px;
-    }
-    .calc-cs-title {
-      color: #fff;
-      font-size: 1.5rem;
-      font-weight: 700;
-      line-height: 1.25;
-      margin: 0;
-    }
-    .calc-cs-sub {
-      color: rgba(255,255,255,0.82);
-      font-size: 0.92rem;
-      line-height: 1.6;
-      max-width: 320px;
-      margin: 0;
-    }
-    .calc-cs-btn {
-      display: inline-block;
-      background: #F79646;
-      color: #fff;
-      font-weight: 700;
-      font-size: 0.95rem;
-      padding: 13px 28px;
-      border-radius: 8px;
-      text-decoration: none;
-      margin-top: 4px;
-      transition: background 0.2s;
-    }
-    .calc-cs-btn:hover { background: #e0843a; }
-
     /* ── Right column: the card ── */
     .calc-card {
       background: var(--teal);
@@ -679,6 +621,7 @@
     }
 
     .calc-field input[type="number"],
+    .calc-field input[type="text"],
     .calc-field select {
       width: 100%;
       background: rgba(255,255,255,0.09);
@@ -695,15 +638,23 @@
       appearance: none;
     }
     .calc-field input[type="number"]:focus,
+    .calc-field input[type="text"]:focus,
     .calc-field select:focus {
       border-color: var(--teal-light);
       background: rgba(255,255,255,0.13);
     }
-    .calc-field input[type="number"]::placeholder { color: rgba(255,255,255,0.3); }
-    .calc-field input[type="number"]::-webkit-inner-spin-button,
-    .calc-field input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+    .calc-field input[type="number"]::placeholder,
+    .calc-field input[type="text"]::placeholder { color: rgba(255,255,255,0.3); }
+
     .calc-field select option { background: var(--teal); color: var(--white); }
 
+    .calc-hint {
+      cursor: help;
+      font-size: 0.8em;
+      opacity: 0.6;
+      vertical-align: middle;
+    }
+    .calc-hint:hover { opacity: 1; }
     /* select arrow */
     .calc-select-wrap { position: relative; }
     .calc-select-wrap::after {
@@ -1266,7 +1217,7 @@
           <p class="section-label" data-lang="de">Das Problem</p>
           <h2 class="section-title" data-lang="en">Electrical architecture is the largest untapped efficiency lever</h2>
           <h2 class="section-title" data-lang="de">Elektrische Architektur ist der größte ungenutzte Effizienz­hebel</h2>
-          <p class="section-body" data-lang="en">Industrial and commercial facilities and data centres are still designed around legacy AC paradigms. Yet most machines run internally on DC. The result: structural losses that nobody touches — because the tools and methods to address them haven't existed.</p>
+          <p class="section-body" data-lang="en">Industrial and commercial facilities and data centres are still designed around legacy AC paradigms. Yet most machines run internally on DC. The result: structural losses that nobody tackles — because the tools and methods to address them haven't existed.</p>
           <p class="section-body" data-lang="de">Industrie- und Gewerbegebäude sowie Rechenzentren werden noch immer nach veralteten AC-Paradigmen geplant. Dabei laufen die meisten Maschinen mittlerweile intern mit DC. Das Ergebnis: Strukturelle Verluste, die niemand angeht — weil die Methoden und Werkzeuge dafür bisher fehlten.</p>
         </div>
         <div class="problem-cards reveal" style="transition-delay: 0.15s">
@@ -1405,7 +1356,7 @@
             <li>ROI-basierte Leistungsbewertung</li>
           </ul>
           <div style="margin-top:36px">
-            <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="btn-primary" data-lang="en">Discuss your next project</a>
+            <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="btn-primary" data-lang="en">Book a free discovery call</a>
             <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="btn-primary" data-lang="de">Ihr nächstes Projekt besprechen</a>
           </div>
         </div>
@@ -1429,22 +1380,35 @@
         </div>
 
         <!-- Right: calculator card -->
-        <div class="calc-coming-soon-wrap">
-        <div class="calc-card reveal" style="transition-delay:0.15s">
+        <div class="calc-card reveal" style="transition-delay:0.15s; position:relative;">
+          <span style="
+            position: absolute;
+            top: 14px; right: 16px;
+            background: var(--orange);
+            color: var(--white);
+            font-size: 0.62rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            opacity: 0.9;
+            z-index: 2;
+          ">BETA</span>
           <form class="calc-form" id="calc-form" novalidate>
 
             <!-- Row 1: consumption + price -->
             <div class="calc-row">
               <div class="calc-field" id="field-E_annual">
                 <label data-lang="en">Annual consumption (kWh/y)</label>
-                <label data-lang="de">Jahresverbrauch (kWh/y)</label>
-                <input type="number" id="inp-E_annual" value="60000" min="1" step="1000" placeholder="60000" />
+                <label data-lang="de">Jahresverbrauch (kWh/a)</label>
+                <input type="text" inputmode="numeric" id="inp-E_annual" value="250.000" placeholder="250000" />
                 <div class="calc-error" id="err-E_annual"></div>
               </div>
               <div class="calc-field" id="field-c_kWh">
                 <label data-lang="en">Energy price (€/kWh)</label>
                 <label data-lang="de">Energiepreis (€/kWh)</label>
-                <input type="number" id="inp-c_kWh" value="0.29" min="0.01" step="0.01" placeholder="0.29" />
+                <input type="text" inputmode="decimal" id="inp-c_kWh" value="0,22" placeholder="0,22" />
                 <div class="calc-error" id="err-c_kWh"></div>
               </div>
             </div>
@@ -1454,20 +1418,17 @@
               <div class="calc-field" id="field-PV_kWp">
                 <label data-lang="en">PV system (kWp, 0 = none)</label>
                 <label data-lang="de">PV-Anlage (kWp, 0 = keine)</label>
-                <input type="number" id="inp-PV_kWp" value="30" min="0" step="5" placeholder="0" />
+                <input type="text" inputmode="numeric" id="inp-PV_kWp" value="50" placeholder="0" />
                 <div class="calc-error" id="err-PV_kWp"></div>
               </div>
               <div class="calc-field" id="field-scenario">
                 <label data-lang="en">Scenario</label>
                 <label data-lang="de">Szenario</label>
                 <div class="calc-select-wrap">
-                  <select id="inp-scenario">
-                    <option value="Conservative" data-lang="en">Conservative</option>
-                    <option value="Conservative" data-lang="de">Konservativ</option>
-                    <option value="Expected" selected data-lang="en">Expected</option>
-                    <option value="Expected" data-lang="de">Erwartet</option>
-                    <option value="Ceiling" data-lang="en">Ceiling (Optimistic)</option>
-                    <option value="Ceiling" data-lang="de">Optimistisch</option>
+                  <select id="inp-scenario" data-scenario-select>
+                    <option value="Conservative">Conservative</option>
+                    <option value="Expected" selected>Expected</option>
+                    <option value="Ceiling">Ceiling (Optimistic)</option>
                   </select>
                 </div>
               </div>
@@ -1475,52 +1436,96 @@
 
             <!-- Slider: load peakiness -->
             <div class="calc-field full">
-              <label data-lang="en">Load profile intensity (p)</label>
-              <label data-lang="de">Lastprofilintensität (p)</label>
+              <label data-lang="en">Load profile intensity <span class="calc-hint" title="How spiky your load profile is: flat = constant process load; spiky = large motors, lifts or short high-power bursts.">ⓘ</span></label>
+              <label data-lang="de">Lastprofilintensität <span class="calc-hint" title="Wie ungleichmäßig das Lastprofil ist: gleichmäßig = konstante Prozesslast; spitz = große Motoren, Aufzüge oder kurze Leistungsspitzen.">ⓘ</span></label>
               <div class="calc-slider-wrap">
-                <input type="range" id="inp-p" min="0" max="1" step="0.05" value="0.55" />
-                <span class="calc-slider-val" id="val-p">0.55</span>
+                <input type="range" id="inp-p" min="0" max="1" step="0.05" value="0.60" />
+                <span class="calc-slider-val" id="val-p">0.60</span>
               </div>
               <div class="calc-slider-hints">
                 <span data-lang="en">Flat (constant)</span>
                 <span data-lang="de">Gleichmäßig</span>
                 <span data-lang="en">Peaky (high peaks)</span>
-                <span data-lang="de">Sehr spitzig</span>
+                <span data-lang="de">Sehr spitz</span>
               </div>
             </div>
 
-            <!-- Slider: automation / regen -->
+            <!-- Slider: DC suitability -->
             <div class="calc-field full">
-              <label data-lang="en">Share of regenerative equipment (a)</label>
-              <label data-lang="de">Anteil regenerativer Antriebe (a)</label>
+              <label data-lang="en">DC suitability of loads <span class="calc-hint" title="Share of loads that are DC-native or can be fed directly from a DC bus (e.g. drives, EV chargers, LED lighting). Higher = more conversion losses eliminated.">ⓘ</span></label>
+              <label data-lang="de">DC-Eignung der Lasten <span class="calc-hint" title="Anteil der Lasten, die DC-nativ sind oder direkt von einem DC-Bus gespeist werden können (z. B. Antriebe, Ladestationen, LED). Höher = weniger Umwandlungsverluste.">ⓘ</span></label>
               <div class="calc-slider-wrap">
-                <input type="range" id="inp-a" min="0" max="1" step="0.05" value="0.70" />
-                <span class="calc-slider-val" id="val-a">0.70</span>
+                <input type="range" id="inp-x_dc" min="0" max="1" step="0.05" value="0.60" />
+                <span class="calc-slider-val" id="val-x_dc">0.60</span>
               </div>
               <div class="calc-slider-hints">
-                <span data-lang="en">Low</span>
-                <span data-lang="de">Niedrig</span>
-                <span data-lang="en">High</span>
-                <span data-lang="de">Hoch</span>
+                <span data-lang="en">Low (mostly AC loads)</span>
+                <span data-lang="de">Niedrig (überwiegend AC)</span>
+                <span data-lang="en">High (mostly DC loads)</span>
+                <span data-lang="de">Hoch (überwiegend DC)</span>
               </div>
+            </div>
+
+            <!-- Slider: regeneration intensity -->
+            <div class="calc-field full">
+              <label data-lang="en">Regeneration intensity <span class="calc-hint" title="Share of motors/drives with energy recuperation (e.g. regenerative braking, VFDs with regen). Higher = more braking energy recovered into the DC bus.">ⓘ</span></label>
+              <label data-lang="de">Regenerationsintensität <span class="calc-hint" title="Anteil der Motoren/Antriebe mit Energierückspeisung (z. B. Rekuperationsbremsung, rückspeisende Umrichter). Höher = mehr Bremsenergie zurück in den DC-Bus.">ⓘ</span></label>
+              <div class="calc-slider-wrap">
+                <input type="range" id="inp-x_regen" min="0" max="1" step="0.05" value="0.40" />
+                <span class="calc-slider-val" id="val-x_regen">0.40</span>
+              </div>
+              <div class="calc-slider-hints">
+                <span data-lang="en">Low (few regen drives)</span>
+                <span data-lang="de">Niedrig (wenig Rückspeisung)</span>
+                <span data-lang="en">High (many regen drives)</span>
+                <span data-lang="de">Hoch (viel Rückspeisung)</span>
+              </div>
+            </div>
+
+            <!-- Region dropdown -->
+            <div class="calc-field full" id="field-region">
+              <label data-lang="en">Region (for PV yield)</label>
+              <label data-lang="de">Region (für PV-Ertrag)</label>
+              <div class="calc-select-wrap">
+                <select id="inp-region">
+                  <option value="Northern Europe">Northern Europe (~950 kWh/kWp)</option>
+                  <option value="Central Europe" selected>Central Europe (~1050 kWh/kWp)</option>
+                  <option value="Southern Europe">Southern Europe (~1400 kWh/kWp)</option>
+                  <option value="US North">US North (~1200 kWh/kWp)</option>
+                  <option value="US South">US South (~1600 kWh/kWp)</option>
+                  <option value="India/SE Asia">India / SE Asia (~1500 kWh/kWp)</option>
+                  <option value="Default">Other / Unknown (~1100 kWh/kWp)</option>
+                </select>
+              </div>
+              <div class="calc-error" id="err-region"></div>
             </div>
 
             <hr class="calc-divider" />
 
-            <!-- Demand charge toggle -->
+            <!-- Battery storage toggle -->
             <div class="calc-toggle-row">
-              <label class="toggle-switch" for="inp-KnowDemand" aria-label="Demand charge known">
-                <input type="checkbox" id="inp-KnowDemand" checked />
+              <label class="toggle-switch" for="inp-has_storage" aria-label="Battery storage present">
+                <input type="checkbox" id="inp-has_storage" checked />
                 <span class="toggle-track"></span>
               </label>
-              <label for="inp-KnowDemand" data-lang="en">I know my demand charge</label>
-              <label for="inp-KnowDemand" data-lang="de">Ich kenne meinen Leistungspreis</label>
+              <label for="inp-has_storage" data-lang="en">Battery storage present (or planned)</label>
+              <label for="inp-has_storage" data-lang="de">Batteriespeicher vorhanden (oder geplant)</label>
+            </div>
+
+            <!-- Demand charge toggle -->
+            <div class="calc-toggle-row">
+              <label class="toggle-switch" for="inp-know_demand_charge" aria-label="Demand charge known">
+                <input type="checkbox" id="inp-know_demand_charge" checked />
+                <span class="toggle-track"></span>
+              </label>
+              <label for="inp-know_demand_charge" data-lang="en">I know my demand charge</label>
+              <label for="inp-know_demand_charge" data-lang="de">Ich kenne meinen Leistungspreis</label>
             </div>
             <div class="calc-field full" id="demand-field" style="display:block">
               <label data-lang="en">Demand charge (€/kW·month)</label>
-              <label data-lang="de">Leistungspreis (€/kW·Monat)</label>
-              <input type="number" id="inp-DemandCharge" value="10" min="0.01" step="1" placeholder="10" />
-              <div class="calc-error" id="err-DemandCharge"></div>
+              <label data-lang="de">Leistungspreis (€/kW · Monat)</label>
+              <input type="text" inputmode="decimal" id="inp-demand_charge" value="12" placeholder="12" />
+              <div class="calc-error" id="err-demand_charge"></div>
             </div>
 
             <!-- Calculate button -->
@@ -1574,16 +1579,6 @@
           </div>
 
         </div><!-- /calc-card -->
-        <div class="calc-coming-soon-overlay">
-          <span class="calc-cs-badge">Coming Soon</span>
-          <p class="calc-cs-title" data-lang="en">Calculator launching soon</p>
-          <p class="calc-cs-title" data-lang="de">Rechner kommt bald</p>
-          <p class="calc-cs-sub" data-lang="en">We are currently validating our model. In the meantime, book a free discovery call and we'll walk you through the savings potential for your facility.</p>
-          <p class="calc-cs-sub" data-lang="de">Wir validieren derzeit unser Modell. Buchen Sie in der Zwischenzeit ein kostenloses Erstgespräch – wir zeigen Ihnen das Einsparpotenzial für Ihre Anlage.</p>
-          <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="calc-cs-btn" data-lang="en">Book a free discovery call</a>
-          <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="calc-cs-btn" data-lang="de">Kostenloses Erstgespräch buchen</a>
-        </div>
-        </div><!-- /calc-coming-soon-wrap -->
       </div>
     </div>
   </section>
@@ -1721,6 +1716,17 @@
         btn.classList.toggle('active', btn.dataset.targetLang === lang);
       });
       document.documentElement.lang = lang;
+      // Update scenario dropdown option labels
+      const sel = document.getElementById('inp-scenario');
+      if (sel) {
+        const saved = sel.value;
+        sel.querySelectorAll('option').forEach(opt => {
+          const key = opt.value;
+          const labels = { Conservative: {en:'Conservative',de:'Konservativ'}, Expected: {en:'Expected',de:'Erwartet'}, Ceiling: {en:'Ceiling (Optimistic)',de:'Optimistisch'} };
+          if (labels[key]) opt.textContent = labels[key][lang] || opt.textContent;
+        });
+        sel.value = saved;
+      }
     }
 
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -1880,10 +1886,10 @@
     const sendBtn      = document.getElementById('calc-send-btn');
     const successPanel = document.getElementById('calc-success');
     const demandField  = document.getElementById('demand-field');
-    const demandToggle = document.getElementById('inp-KnowDemand');
+    const demandToggle = document.getElementById('inp-know_demand_charge');
 
     // Slider live display
-    ['p', 'a'].forEach(id => {
+    ['p', 'x_dc', 'x_regen'].forEach(id => {
       const slider = document.getElementById('inp-' + id);
       const display = document.getElementById('val-' + id);
       slider.addEventListener('input', () => {
@@ -1891,23 +1897,62 @@
       });
     });
 
+    // Thousand-separator formatting for number inputs
+    const numInputIds = ['inp-E_annual', 'inp-c_kWh', 'inp-PV_kWp', 'inp-demand_charge'];
+    numInputIds.forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      // On blur: format with locale separators
+      el.addEventListener('blur', () => {
+        const isDecimal = (id === 'inp-c_kWh' || id === 'inp-demand_charge');
+        const val = isDecimal
+          ? parseDecimalInput(el.value)
+          : parseFloat(el.value.replace(/[^0-9]/g, '') || '0');
+        if (!isNaN(val) && el.value.trim() !== '') {
+          const locale = currentLang === 'de' ? 'de-DE' : 'en-US';
+          const decimals = isDecimal ? 2 : 0;
+          el.value = val.toLocaleString(locale, {minimumFractionDigits: decimals, maximumFractionDigits: decimals});
+        }
+      });
+      // On focus: just select all so user can type freely — never overwrite
+      el.addEventListener('focus', () => { el.select(); });
+    });
+
     // Demand charge toggle
     demandToggle.addEventListener('change', () => {
       demandField.style.display = demandToggle.checked ? 'block' : 'none';
     });
 
+    // Parse a locale-formatted decimal string ("0,29" or "0.29") to float
+    function parseDecimalInput(str) {
+      // If both dot and comma present, the one appearing last is the decimal separator
+      const s = str.trim();
+      const lastDot = s.lastIndexOf('.');
+      const lastComma = s.lastIndexOf(',');
+      if (lastComma > lastDot) {
+        // comma is decimal separator (DE): remove dots (thousands), replace comma with dot
+        return parseFloat(s.replace(/\./g, '').replace(',', '.'));
+      } else {
+        // dot is decimal separator (EN): remove commas (thousands)
+        return parseFloat(s.replace(/,/g, ''));
+      }
+    }
+
     // ─── VALIDATION (client-side mirror of Worker) ────────────
     function getInputs() {
       return {
-        E_annual:     parseFloat(document.getElementById('inp-E_annual').value),
-        c_kWh:        parseFloat(document.getElementById('inp-c_kWh').value),
-        PV_kWp:       parseFloat(document.getElementById('inp-PV_kWp').value),
-        p:            parseFloat(document.getElementById('inp-p').value),
-        a:            parseFloat(document.getElementById('inp-a').value),
-        KnowDemand:   demandToggle.checked,
-        DemandCharge: parseFloat(document.getElementById('inp-DemandCharge').value) || 0,
-        scenario:     document.getElementById('inp-scenario').value,
-        lang:         currentLang,
+        E_annual:           parseFloat(document.getElementById('inp-E_annual').value.replace(/[^0-9]/g,'')||'0'),
+        c_kWh:              parseDecimalInput(document.getElementById('inp-c_kWh').value),
+        PV_kWp:             parseFloat(document.getElementById('inp-PV_kWp').value.replace(/[^0-9]/g,'')||'0'),
+        p:                  parseFloat(document.getElementById('inp-p').value),
+        x_dc:               parseFloat(document.getElementById('inp-x_dc').value),
+        x_regen:            parseFloat(document.getElementById('inp-x_regen').value),
+        has_storage:        document.getElementById('inp-has_storage').checked,
+        know_demand_charge: demandToggle.checked,
+        demand_charge:      parseDecimalInput(document.getElementById('inp-demand_charge').value) || 0,
+        scenario:           document.getElementById('inp-scenario').value,
+        region:             document.getElementById('inp-region').value,
+        lang:               currentLang,
       };
     }
 
@@ -1941,7 +1986,7 @@
         en: 'Cannot be negative.',
         de: 'Darf nicht negativ sein.',
       },
-      DemandCharge: {
+      demand_charge: {
         en: 'Must be greater than 0 €/kW·month.',
         de: 'Muss größer als 0 €/kW·Monat sein.',
       },
@@ -1959,8 +2004,8 @@
       if (inputs.PV_kWp < 0) {
         showError('PV_kWp', VALIDATION_MSGS.PV_kWp[L]); ok = false;
       }
-      if (inputs.KnowDemand && (!inputs.DemandCharge || inputs.DemandCharge <= 0)) {
-        showError('DemandCharge', VALIDATION_MSGS.DemandCharge[L]); ok = false;
+      if (inputs.know_demand_charge && (!inputs.demand_charge || inputs.demand_charge <= 0)) {
+        showError('demand_charge', VALIDATION_MSGS.demand_charge[L]); ok = false;
       }
       return ok;
     }
@@ -1995,9 +2040,12 @@
         }
 
         // Show result
-        const pct = (data.percent_save * 100).toFixed(1) + ' %';
+        const locale = currentLang === 'de' ? 'de-DE' : 'en-US';
+        const pct = (data.percent_save * 100).toLocaleString(locale, {minimumFractionDigits:1, maximumFractionDigits:1}) + ' %';
         resultPct.textContent = pct;
-        resultDiscl.textContent = data.disclaimer;
+        resultDiscl.textContent = currentLang === 'de'
+          ? 'Indikative Schätzung – Abweichungen je nach Anlage möglich.'
+          : 'Indicative estimate — actual savings depend on site conditions.';
         resultPanel.classList.add('visible');
 
         // Scroll result into view on mobile
