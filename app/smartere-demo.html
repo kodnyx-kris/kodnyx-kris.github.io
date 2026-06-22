@@ -1,0 +1,3665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DC Opportunity Diagnostic — Kodnyx</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* ─── TOKENS ──────────────────────────────────────────────── */
+    :root {
+      --teal:        #0E4C52;
+      --teal-mid:    #1a6b73;
+      --teal-light:  #5FB7B0;
+      --teal-pale:   #e8f4f4;
+      --orange:      #F79646;
+      --orange-dark: #e07e2e;
+      --white:       #FFFFFF;
+      --off-white:   #F4F6F5;
+      --text-dark:   #0D1F22;
+      --text-mid:    #3A5C60;
+      --text-light:  #7a9fa4;
+      --border:      rgba(14,76,82,0.12);
+      --red:         #e74c3c;
+      --red-pale:    rgba(231,76,60,0.08);
+      --green:       #22c55e;
+      --green-pale:  rgba(34,197,94,0.08);
+      --font:        'Plus Jakarta Sans', sans-serif;
+      --radius:      10px;
+      --shadow:      0 4px 24px rgba(14,76,82,0.10);
+      --shadow-lg:   0 12px 48px rgba(14,76,82,0.15);
+    }
+
+    /* ─── RESET ───────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font);
+      color: var(--text-dark);
+      background: var(--off-white);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ─── HEADER ──────────────────────────────────────────────── */
+    header {
+      background: var(--teal);
+      padding: 0 5%;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo img { height: 30px; width: auto; }
+    .logo-fallback {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--white);
+      letter-spacing: -0.02em;
+    }
+    .header-tag {
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+    }
+
+    /* ─── MAIN LAYOUT ─────────────────────────────────────────── */
+    main {
+      min-height: calc(100vh - 64px - 56px);
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 40px 20px 64px;
+    }
+    .tool-shell {
+      width: 100%;
+      max-width: 960px;
+    }
+
+    /* ─── PROGRESS STEPPER ────────────────────────────────────── */
+    .stepper {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      margin-bottom: 40px;
+    }
+    .step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+    }
+    .step:not(.completed):not(.active) {
+      cursor: default;
+      pointer-events: none;
+    }
+    .step-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-light);
+      background: var(--white);
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .step.active .step-circle {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: var(--white);
+    }
+    .step.completed .step-circle {
+      background: var(--teal-light);
+      border-color: var(--teal-light);
+      color: var(--white);
+    }
+    .step-label {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      transition: color 0.3s;
+    }
+    .step.active .step-label { color: var(--teal); }
+    .step.completed .step-label { color: var(--teal-light); }
+    .step-line {
+      width: 60px;
+      height: 2px;
+      background: var(--border);
+      margin: 0 12px;
+      transition: background 0.3s;
+    }
+    .step-line.done { background: var(--teal-light); }
+
+    @media (max-width: 520px) {
+      .step-label { display: none; }
+      .step-line { width: 40px; }
+    }
+
+    /* ─── SCREEN CONTAINERS ───────────────────────────────────── */
+    .screen {
+      display: none;
+      animation: fadeSlideIn 0.35s ease forwards;
+    }
+    .screen.active { display: block; }
+
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SHARED CARD ─────────────────────────────────────────── */
+    .card {
+      background: var(--white);
+      border-radius: 14px;
+      padding: 36px 40px 32px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 1.18rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      line-height: 1.35;
+      margin-bottom: 6px;
+    }
+    .card-sub {
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      line-height: 1.55;
+      margin-bottom: 24px;
+    }
+    .section-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 10px;
+    }
+
+    /* ─── SCREEN 1: INPUT ─────────────────────────────────────── */
+    .screen-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .screen-header h1 {
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 800;
+      color: var(--teal);
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      margin-bottom: 10px;
+    }
+    .screen-header p {
+      font-size: 0.95rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Upload zones */
+    .upload-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 8px;
+    }
+    @media (max-width: 640px) {
+      .upload-grid { grid-template-columns: 1fr; }
+    }
+    .upload-zone {
+      border: 2px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 24px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
+    }
+    .upload-zone:hover {
+      border-color: var(--teal-light);
+      background: var(--teal-pale);
+    }
+    .upload-zone.uploaded {
+      border-color: var(--green);
+      background: var(--green-pale);
+      border-style: solid;
+    }
+    .upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .upload-icon {
+      width: 36px;
+      height: 36px;
+      margin: 0 auto 10px;
+      color: var(--teal-light);
+    }
+    .upload-zone.uploaded .upload-icon { color: var(--green); }
+    .upload-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .upload-formats {
+      font-size: 0.75rem;
+      color: var(--text-light);
+    }
+    .upload-filename {
+      display: none;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--green);
+      margin-top: 6px;
+    }
+    .upload-zone.uploaded .upload-filename { display: block; }
+    .upload-zone.uploaded .upload-formats { display: none; }
+    .upload-note {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      font-style: italic;
+      margin-top: 8px;
+    }
+
+    /* Input fields */
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    @media (max-width: 520px) {
+      .field-row { grid-template-columns: 1fr; }
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+    }
+    .field.full { grid-column: 1 / -1; }
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+    }
+    .field input[type="number"],
+    .field input[type="text"] {
+      width: 100%;
+      background: var(--off-white);
+      border: 1.5px solid var(--border);
+      border-radius: 7px;
+      padding: 11px 14px;
+      color: var(--text-dark);
+      font-family: var(--font);
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    .field input:focus {
+      border-color: var(--teal-light);
+    }
+    .field input::placeholder { color: var(--text-light); }
+    .field-hint {
+      font-size: 0.72rem;
+      color: var(--text-light);
+      margin-top: 4px;
+    }
+
+    /* Process tags */
+    .tag-select {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+    .tag-btn {
+      font-family: var(--font);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      background: var(--off-white);
+      border: 1.5px solid var(--border);
+      border-radius: 20px;
+      padding: 6px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .tag-btn:hover {
+      border-color: var(--teal-light);
+      background: var(--teal-pale);
+    }
+    .tag-btn.selected {
+      background: var(--teal-pale);
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    /* Checkbox grid */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    @media (max-width: 480px) {
+      .checkbox-grid { grid-template-columns: 1fr; }
+    }
+    .check-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .check-option:hover {
+      border-color: var(--teal-light);
+      background: var(--teal-pale);
+    }
+    .check-option.selected {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+    }
+    .check-option input[type="checkbox"] { display: none; }
+    .check-box {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      margin-top: 1px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .check-option.selected .check-box {
+      background: var(--teal);
+      border-color: var(--teal);
+    }
+    .check-option.selected .check-box::after {
+      content: '';
+      width: 5px;
+      height: 9px;
+      border: 2px solid var(--white);
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translateY(-1px);
+    }
+    .check-option-text {
+      font-size: 0.88rem;
+      font-weight: 500;
+      color: var(--text-dark);
+      line-height: 1.4;
+    }
+
+    /* Divider */
+    .card-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+
+    /* Primary CTA */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--orange);
+      color: var(--white);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 14px 32px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s;
+      letter-spacing: 0.01em;
+    }
+    .btn-primary:hover { background: var(--orange-dark); transform: translateY(-1px); }
+    .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--teal);
+      font-family: var(--font);
+      font-size: 0.95rem;
+      font-weight: 600;
+      padding: 14px 28px;
+      border-radius: 7px;
+      border: 1.5px solid var(--teal);
+      cursor: pointer;
+      transition: all 0.25s;
+    }
+    .btn-ghost:hover { background: var(--teal-pale); }
+
+    .btn-back {
+      font-family: var(--font);
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-mid);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 10px 0;
+      transition: color 0.2s;
+    }
+    .btn-back:hover { color: var(--teal); }
+
+    .cta-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+    .cta-center {
+      display: flex;
+      justify-content: center;
+      margin-top: 28px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ─── LOADING OVERLAY ─────────────────────────────────────── */
+    .loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(14,76,82,0.85);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 20px;
+    }
+    .loading-overlay.visible { display: flex; }
+    .loading-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: var(--teal-light);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    /* ─── SCREEN 2: SYSTEM UNDERSTANDING ──────────────────────── */
+    .system-part {
+      margin-bottom: 32px;
+    }
+    .system-part-header {
+      margin-bottom: 20px;
+    }
+    .system-part-header h2 {
+      font-size: clamp(1.2rem, 3vw, 1.5rem);
+      font-weight: 800;
+      color: var(--teal);
+      letter-spacing: -0.02em;
+    }
+    .system-part-header p {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      margin-top: 4px;
+    }
+    /* Architecture comparison */
+    .arch-comparison-card { padding: 0; overflow: hidden; }
+    .arch-section { padding: 28px 28px 20px; }
+    .arch-section-ac { background: #f8fafa; border-bottom: 2px solid var(--border); }
+    .arch-section-dc { background: white; }
+    .arch-section-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .arch-tag {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .arch-tag-ac { background: rgba(14,76,82,0.08); color: var(--teal); }
+    .arch-tag-dc { background: var(--teal); color: white; }
+    .arch-section-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-dark);
+    }
+    .arch-content {
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
+    }
+    .arch-diagram-wrap {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+    }
+    .arch-diagram-wrap svg { width: 100%; height: auto; min-width: 580px; }
+    .arch-insights {
+      flex: 0 0 220px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .arch-insights-title {
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+    .arch-insight {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.82rem;
+      line-height: 1.45;
+      color: var(--text-mid);
+    }
+    .arch-insight-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+    }
+    .arch-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      padding: 14px 28px;
+      background: var(--off-white);
+      border-top: 1px solid var(--border);
+      font-size: 0.78rem;
+      color: var(--text-mid);
+    }
+    .arch-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    @media (max-width: 900px) {
+      .arch-content { flex-direction: column; }
+      .arch-insights { flex: none; width: 100%; flex-direction: row; flex-wrap: wrap; }
+      .arch-insight { flex: 1 1 200px; }
+    }
+
+    /* Flow animations */
+    @keyframes flow-fwd { to { stroke-dashoffset: -40; } }
+    @keyframes flow-rev { to { stroke-dashoffset: 40; } }
+    .flow-ac   { stroke-dasharray: 12 8; animation: flow-fwd 1.4s linear infinite; }
+    .flow-dc   { stroke-dasharray: 10 6; animation: flow-fwd 1.0s linear infinite; }
+    .flow-loss { stroke-dasharray: 6 4;  animation: flow-fwd 2.0s linear infinite; }
+    .flow-to-load { stroke-dasharray: 6 6; animation: flow-fwd 1.2s linear infinite; }
+    .flow-recup { stroke-dasharray: 8 6; animation: flow-fwd 1.5s linear infinite; }
+    .flow-recup-down { stroke-dasharray: 8 6; animation: flow-rev 1.5s linear infinite; }
+    .flow-share { stroke-dasharray: 10 6; animation: flow-fwd 1.3s linear infinite; }
+    .flow-bess-charge { stroke-dasharray: 6 6; animation: flow-fwd 2.0s linear infinite; }
+    .flow-bess-discharge { stroke-dasharray: 6 6; animation: flow-rev 2.0s linear infinite; }
+
+    .disclaimer {
+      font-size: 0.78rem;
+      color: var(--text-light);
+      font-style: italic;
+      text-align: center;
+      margin-top: 16px;
+      margin-bottom: 8px;
+    }
+
+    /* ─── SCREEN 3: IMPACT ────────────────────────────────────── */
+
+    /* Scenario selector */
+    .scenario-selector-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 640px) { .scenario-selector-grid { grid-template-columns: 1fr; } }
+    .scenario-selector-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    .scenario-selector-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .scenario-selector-card.scenario-selector-active {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+      box-shadow: 0 0 0 2px rgba(14,76,82,0.15);
+    }
+    .scenario-selector-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 6px;
+    }
+    .scenario-selector-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .scenario-selector-savings {
+      font-size: 1.3rem;
+      font-weight: 800;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .scenario-selector-card.baseline-card .scenario-selector-savings { color: var(--text-light); }
+    .scenario-selector-desc {
+      font-size: 0.75rem;
+      color: var(--text-mid);
+      line-height: 1.4;
+    }
+
+    /* KPI tiles */
+    .kpi-tiles-top {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 640px) { .kpi-tiles-top { grid-template-columns: repeat(2, 1fr); } }
+    .kpi-tile-top {
+      text-align: center;
+      padding: 16px 10px;
+      background: white;
+      border-radius: var(--radius);
+      border: 1.5px solid var(--border);
+      box-shadow: var(--shadow);
+    }
+    .kpi-tile-top-label {
+      font-size: 0.6rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 6px;
+    }
+    .kpi-tile-top-value {
+      font-size: clamp(1.2rem, 3vw, 1.6rem);
+      font-weight: 800;
+      color: var(--teal);
+      line-height: 1.1;
+    }
+    .kpi-tile-top-desc {
+      font-size: 0.72rem;
+      color: var(--text-mid);
+      margin-top: 4px;
+    }
+
+    /* Interpretation */
+    .interpretation {
+      font-size: 0.93rem;
+      line-height: 1.7;
+      color: var(--text-mid);
+      margin-bottom: 8px;
+    }
+
+    /* (sankey styles removed — replaced by .flow-* in architecture comparison) */
+
+    /* Scenario table */
+    .scenario-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px;
+    }
+    .scenario-grid-2 { grid-template-columns: repeat(2, 1fr); max-width: 560px; margin-left: auto; margin-right: auto; }
+    @media (max-width: 640px) {
+      .scenario-grid, .scenario-grid-2 { grid-template-columns: 1fr; }
+    }
+    .scenario-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px 20px;
+      text-align: center;
+      transition: transform 0.2s;
+    }
+    .scenario-card:hover { transform: translateY(-2px); }
+    .scenario-card.highlight {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+    }
+    .scenario-card.baseline {
+      background: var(--off-white);
+    }
+    .scenario-card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 10px;
+    }
+    .scenario-card h3 {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .scenario-card-impact {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .scenario-card.baseline .scenario-card-impact {
+      color: var(--text-light);
+    }
+    .scenario-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+    .scenario-savings {
+      display: inline-block;
+      margin-top: 4px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: #22c55e;
+    }
+
+    /* Comparison table */
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 0.82rem;
+    }
+    .comparison-table th, .comparison-table td {
+      text-align: left;
+      padding: 9px 14px;
+      border-bottom: 1px solid var(--border);
+    }
+    .comparison-table th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+      background: var(--off-white);
+    }
+    .comparison-table td { color: var(--text-mid); }
+    .comparison-table td:first-child {
+      font-weight: 600;
+      color: var(--text-dark);
+      white-space: nowrap;
+    }
+    .comparison-table .col-active {
+      background: var(--teal-pale);
+    }
+    .comparison-table th.col-active {
+      background: var(--teal-pale);
+      color: var(--teal);
+    }
+    .comparison-table .row-highlight td {
+      font-weight: 700;
+      color: var(--teal);
+    }
+
+    /* Recommendation callout */
+    .callout {
+      background: var(--teal-pale);
+      border-left: 3px solid var(--teal);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 20px;
+      margin-top: 20px;
+    }
+    .callout-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 6px;
+    }
+    .callout-text {
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      line-height: 1.55;
+    }
+
+    .callout-light {
+      background: var(--off-white);
+      border-left: 3px solid var(--teal-light);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 20px;
+      margin-top: 12px;
+    }
+
+    /* Final CTAs */
+    .final-ctas {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-top: 32px;
+    }
+    .final-ctas .btn-ghost {
+      min-width: 220px;
+      text-align: center;
+    }
+
+    .reset-link {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-light);
+      cursor: pointer;
+      transition: color 0.2s;
+      background: none;
+      border: none;
+      font-family: var(--font);
+    }
+    .reset-link:hover { color: var(--teal); }
+
+    /* ─── BUSINESS CASE (Screen 3 addition) ───────────────────── */
+    .card-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 24px 0;
+    }
+    .capex-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+    }
+    .capex-table th, .capex-table td {
+      text-align: left;
+      padding: 10px 14px;
+      font-size: 0.85rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .capex-table th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-light);
+    }
+    .capex-table td { color: var(--text-mid); }
+    .capex-table td:last-child {
+      text-align: right;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+    .capex-table .capex-total td {
+      font-weight: 700;
+      color: var(--teal);
+      border-top: 2px solid var(--teal);
+      border-bottom: none;
+    }
+
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+    @media (max-width: 640px) { .kpi-row { grid-template-columns: 1fr; } }
+    .kpi-card {
+      text-align: center;
+      padding: 20px 16px;
+      background: var(--teal-pale);
+      border-radius: 8px;
+    }
+    .kpi-card-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--teal-light);
+      margin-bottom: 6px;
+    }
+    .kpi-card-value {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: var(--teal);
+    }
+    .kpi-card-desc {
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      margin-top: 4px;
+    }
+
+    .cashflow-chart { width: 100%; overflow-x: auto; margin-top: 16px; }
+    .cashflow-chart svg { width: 100%; height: auto; }
+
+    .savings-aggregate {
+      display: flex;
+      align-items: baseline;
+      gap: 16px;
+      padding: 18px 20px;
+      background: var(--teal-pale);
+      border-radius: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .savings-aggregate-pct {
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--teal);
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .savings-aggregate-meta {
+      font-size: 0.82rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+
+    .capex-note {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      font-style: italic;
+      margin-top: 12px;
+    }
+
+    /* ─── CTA ROW ────────────────────────────────────────────── */
+    .cta-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-top: 32px;
+    }
+    @media (max-width: 520px) {
+      .cta-row { flex-direction: column; }
+    }
+
+    /* ─── ENGINEERING PACKAGE (Screen 4) ──────────────────────── */
+    .eng-sample-banner {
+      text-align: center;
+      padding: 10px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--orange);
+      background: rgba(247,150,70,0.08);
+      border: 1.5px dashed var(--orange);
+      border-radius: var(--radius);
+      margin-bottom: 24px;
+    }
+    .eng-section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 16px;
+    }
+    .eng-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .eng-table th, .eng-table td {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .eng-table th {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-light);
+      background: var(--off-white);
+    }
+    .eng-table td { color: var(--text-mid); }
+    .bom-subtitle { font-size: 0.82rem; color: var(--text-light); margin: -4px 0 16px; }
+    .bom-component { font-weight: 600; color: var(--text-dark); }
+    .bom-options-cell { padding: 6px 12px !important; }
+    .bom-option { display: grid; grid-template-columns: 62px 1fr; gap: 8px; align-items: center; margin-bottom: 4px; font-size: 0.78rem; line-height: 1.35; }
+    .bom-option:last-child { margin-bottom: 0; }
+    .bom-option-logo { display: flex; align-items: center; justify-content: flex-start; min-height: 18px; }
+    .bom-option-text { display: flex; flex-wrap: wrap; gap: 4px; align-items: baseline; }
+    .oem-badge {
+      display: inline-block;
+      background: var(--teal);
+      color: white;
+      font-size: 0.62rem;
+      font-weight: 700;
+      padding: 1px 5px;
+      border-radius: 3px;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+    .oem-logo {
+      height: 14px;
+      width: auto;
+      max-width: 56px;
+      object-fit: contain;
+      opacity: 0.85;
+    }
+    .bom-product { font-weight: 600; color: var(--text-dark); white-space: nowrap; }
+    .bom-spec { color: var(--text-light); font-size: 0.72rem; }
+    .eng-sld-wrap {
+      background: var(--off-white);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+    }
+    .eng-sld-image {
+      width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+    .eng-timeline-phases {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    @media (max-width: 640px) { .eng-timeline-phases { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .eng-timeline-phases { grid-template-columns: 1fr; } }
+    .eng-phase-card {
+      padding: 16px;
+      border-radius: 8px;
+      border-left: 3px solid var(--teal-light);
+      background: var(--off-white);
+    }
+    .eng-phase-number {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--teal-light);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 4px;
+    }
+    .eng-phase-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .eng-phase-duration {
+      font-size: 0.78rem;
+      color: var(--text-mid);
+      margin-bottom: 6px;
+    }
+    .eng-phase-desc {
+      font-size: 0.75rem;
+      color: var(--text-light);
+      line-height: 1.5;
+    }
+    .eng-compliance-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .eng-compliance-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+    .eng-compliance-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--green);
+      margin-top: 2px;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────────── */
+    footer {
+      background: var(--teal);
+      padding: 20px 5%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-copy {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.35);
+    }
+    .footer-link {
+      font-size: 0.75rem;
+      color: rgba(255,255,255,0.5);
+      transition: color 0.2s;
+    }
+    .footer-link:hover { color: var(--white); }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────────── */
+    @media (max-width: 520px) {
+      .card { padding: 24px 20px 24px; }
+      main { padding: 24px 12px 48px; }
+    }
+
+    /* ─── SCREEN 0: SEGMENT SELECTOR ─────────────────────────── */
+    .segment-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 640px) { .segment-grid { grid-template-columns: 1fr; } }
+    .segment-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    .segment-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .segment-card.segment-active {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+      box-shadow: 0 0 0 2px rgba(14,76,82,0.15);
+    }
+    .segment-card-icon {
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 8px;
+      color: var(--teal-light);
+    }
+    .segment-card.segment-active .segment-card-icon { color: var(--teal); }
+    .segment-card-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 4px;
+    }
+    .segment-card-desc {
+      font-size: 0.73rem;
+      color: var(--text-mid);
+      line-height: 1.35;
+    }
+
+    .phase-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 16px;
+    }
+    @media (max-width: 520px) { .phase-grid { grid-template-columns: 1fr; } }
+    .phase-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+    }
+    .phase-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+    .phase-card.phase-active {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+      box-shadow: 0 0 0 2px rgba(14,76,82,0.15);
+    }
+    .phase-card-icon {
+      width: 28px;
+      height: 28px;
+      margin-bottom: 6px;
+      color: var(--teal-light);
+    }
+    .phase-card.phase-active .phase-card-icon { color: var(--teal); }
+    .phase-card-name {
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--teal);
+      margin-bottom: 3px;
+    }
+    .phase-card-desc {
+      font-size: 0.73rem;
+      color: var(--text-mid);
+      line-height: 1.35;
+    }
+
+
+    /* ─── PAIN PICKER ────────────────────────────────────────── */
+    .pain-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+    .pain-card {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: white;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .pain-card:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+    .pain-card.pain-active {
+      border-color: var(--teal);
+      background: var(--teal-pale);
+      box-shadow: 0 0 0 2px rgba(14,76,82,0.15);
+    }
+    .pain-card-icon {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      color: var(--teal-light);
+    }
+    .pain-card.pain-active .pain-card-icon { color: var(--teal); }
+    .pain-card-label {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: var(--teal);
+      line-height: 1.35;
+    }
+
+    /* ─── BROWNFIELD WARNING ─────────────────────────────────── */
+    .callout-warning {
+      background: rgba(247,150,70,0.06);
+      border-left: 3px solid var(--orange);
+      border-radius: 0 8px 8px 0;
+      padding: 18px 20px;
+      margin-bottom: 24px;
+    }
+    .callout-warning .callout-title { color: var(--orange-dark); }
+
+    /* ─── NOT RECOMMENDED CARD ───────────────────────────────── */
+    .not-recommended-card {
+      background: var(--off-white);
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 40px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .not-recommended-icon {
+      width: 56px;
+      height: 56px;
+      margin: 0 auto 16px;
+      color: var(--text-light);
+    }
+    .not-recommended-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--text-dark);
+      margin-bottom: 8px;
+    }
+    .not-recommended-sub {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.6;
+      max-width: 560px;
+      margin: 0 auto 24px;
+    }
+    .trigger-list {
+      text-align: left;
+      max-width: 480px;
+      margin: 0 auto 24px;
+    }
+    .trigger-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.88rem;
+      color: var(--text-mid);
+      line-height: 1.5;
+    }
+    .trigger-item:last-child { border-bottom: none; }
+    .trigger-icon {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      color: var(--orange);
+      margin-top: 2px;
+    }
+
+    .stepper.hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <!-- ═══ HEADER ══════════════════════════════════════════════ -->
+  <header>
+    <a href="https://kodnyx.com" class="logo" target="_blank">
+      <img src="https://kodnyx.com/kodnyx_white_teal.png" alt="Kodnyx" onerror="this.style.display='none';this.nextElementSibling.style.display='inline';" />
+      <span class="logo-fallback" style="display:none;">Kodnyx</span>
+    </a>
+    <span class="header-tag">DC Opportunity Diagnostic</span>
+  </header>
+
+  <!-- ═══ LOADING OVERLAY ═════════════════════════════════════ -->
+  <div class="loading-overlay" id="loading">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">Analyzing system&hellip;</div>
+  </div>
+
+  <!-- ═══ MAIN ════════════════════════════════════════════════ -->
+  <main>
+    <div class="tool-shell">
+
+      <!-- Progress stepper (4 steps including use-case selection) -->
+      <div class="stepper" id="stepper">
+        <div class="step active" data-step="0" onclick="stepClick(0)">
+          <div class="step-circle">1</div>
+          <span class="step-label">Use Case</span>
+        </div>
+        <div class="step-line" id="line-0-1"></div>
+        <div class="step" data-step="1" onclick="stepClick(1)">
+          <div class="step-circle">2</div>
+          <span class="step-label">Input</span>
+        </div>
+        <div class="step-line" id="line-1-2"></div>
+        <div class="step" data-step="2" onclick="stepClick(2)">
+          <div class="step-circle">3</div>
+          <span class="step-label">System</span>
+        </div>
+        <div class="step-line" id="line-2-3"></div>
+        <div class="step" data-step="3" onclick="stepClick(3)">
+          <div class="step-circle">4</div>
+          <span class="step-label">Impact</span>
+        </div>
+      </div>
+
+      <!-- ═══ SCREEN 0 — SEGMENT & PROJECT PHASE ═══════════════ -->
+      <div class="screen active" id="screen-0">
+        <div class="screen-header">
+          <h1>Configure Assessment</h1>
+          <p>Select the project context to tailor the diagnostic output for your customer.</p>
+        </div>
+
+        <div class="card">
+          <p class="section-eyebrow">Use Case Segment</p>
+          <p class="card-title">What type of site or project?</p>
+          <div class="segment-grid" id="segment-selector">
+            <div class="segment-card" data-segment="industrial">
+              <svg class="segment-card-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="20" width="16" height="22" rx="2"/><rect x="26" y="10" width="16" height="32" rx="2"/><line x1="10" y1="26" x2="18" y2="26"/><line x1="10" y1="32" x2="18" y2="32"/><line x1="30" y1="16" x2="38" y2="16"/><line x1="30" y1="22" x2="38" y2="22"/><line x1="30" y1="28" x2="38" y2="28"/><path d="M14 20V8l14-4v6"/></svg>
+              <div class="segment-card-name">Industrial Manufacturing</div>
+              <div class="segment-card-desc">CNC, robotics, servo drives, VFD motors, automated production lines</div>
+            </div>
+            <div class="segment-card" data-segment="logistics">
+              <svg class="segment-card-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="16" width="28" height="20" rx="2"/><path d="M32 22h8l4 8v6h-12"/><circle cx="14" cy="38" r="4"/><circle cx="38" cy="38" r="4"/><path d="M18 36h16"/><line x1="8" y1="22" x2="20" y2="22"/><line x1="8" y1="28" x2="16" y2="28"/></svg>
+              <div class="segment-card-name">Logistics & EV Depot</div>
+              <div class="segment-card-desc">Fleet electrification, EV charging depots, warehousing, high-bay storage</div>
+            </div>
+            <div class="segment-card" data-segment="datacentre">
+              <svg class="segment-card-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="8" y="6" width="32" height="36" rx="3"/><line x1="8" y1="18" x2="40" y2="18"/><line x1="8" y1="30" x2="40" y2="30"/><circle cx="34" cy="12" r="2"/><circle cx="34" cy="24" r="2"/><circle cx="34" cy="36" r="2"/><line x1="14" y1="12" x2="28" y2="12"/><line x1="14" y1="24" x2="28" y2="24"/><line x1="14" y1="36" x2="28" y2="36"/></svg>
+              <div class="segment-card-name">Data Centre</div>
+              <div class="segment-card-desc">Server halls, colocation facilities, edge data centres, UPS-backed infrastructure</div>
+            </div>
+            <div class="segment-card" data-segment="officebuildings">
+              <svg class="segment-card-icon" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2"><rect x="10" y="8" width="28" height="34" rx="2"/><rect x="16" y="14" width="6" height="6" rx="1"/><rect x="26" y="14" width="6" height="6" rx="1"/><rect x="16" y="24" width="6" height="6" rx="1"/><rect x="26" y="24" width="6" height="6" rx="1"/><rect x="20" y="34" width="8" height="8" rx="1"/></svg>
+              <div class="segment-card-name">Office Buildings</div>
+              <div class="segment-card-desc">Commercial office complexes, mixed-use buildings, smart building infrastructure</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <p class="section-eyebrow">Project Phase</p>
+          <p class="card-title">Is this an existing facility or a new build?</p>
+          <div class="phase-grid" id="phase-selector">
+            <div class="phase-card" data-phase="greenfield">
+              <svg class="phase-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="16" width="24" height="16" rx="2"/><path d="M4 18L18 6l14 12"/><line x1="18" y1="6" x2="18" y2="2"/><path d="M16 2h6"/></svg>
+              <div class="phase-card-name">New Build / Expansion</div>
+              <div class="phase-card-desc">Planning or designing a new facility, major extension, or greenfield project. Architecture decisions are still open.</div>
+            </div>
+            <div class="phase-card" data-phase="brownfield">
+              <svg class="phase-card-icon" viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="2"><rect x="6" y="12" width="24" height="20" rx="2"/><path d="M4 14L18 4l14 10"/><line x1="12" y1="18" x2="18" y2="18"/><line x1="12" y1="24" x2="18" y2="24"/><path d="M24 22v10"/><line x1="22" y1="32" x2="30" y2="32"/><path d="M26 26l-2-4h4l-2 4"/></svg>
+              <div class="phase-card-name">Existing Facility</div>
+              <div class="phase-card-desc">Retrofitting or upgrading an existing electrical infrastructure. AC architecture is already in place.</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="brownfield-early-warning"></div>
+
+        <div class="cta-center">
+          <button class="btn-primary" id="btn-start-diagnostic" disabled>
+            Start Diagnostic
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- ═══ SCREEN 1 — INPUT ═══════════════════════════════ -->
+      <div class="screen" id="screen-1">
+
+        <div class="screen-header">
+          <h1>Assess Your Site's Electrical Setup</h1>
+          <p>Upload available data or describe your system briefly. The diagnostic takes about 2 minutes.</p>
+        </div>
+
+        <!-- Pain picker -->
+        <div id="pain-picker"></div>
+
+        <!-- Section B: Site overview -->
+        <div class="card">
+          <p class="section-eyebrow">Site Overview</p>
+          <div class="field-row">
+            <div class="field">
+              <label for="annual-kwh">Annual electricity consumption (MWh) *</label>
+              <input type="number" id="annual-kwh" placeholder="e.g. 2,000" min="0" />
+            </div>
+            <div class="field">
+              <label for="peak-kw">Peak load (kW)</label>
+              <input type="number" id="peak-kw" placeholder="e.g. 800" min="0" />
+              <span class="field-hint">Optional — improves peak shaving estimate</span>
+            </div>
+          </div>
+          <div class="field full">
+            <label>Main processes</label>
+            <div class="tag-select" id="process-tags">
+              <button type="button" class="tag-btn" data-tag="metal-forming">Metal forming</button>
+              <button type="button" class="tag-btn" data-tag="assembly">Assembly</button>
+              <button type="button" class="tag-btn" data-tag="packaging">Packaging</button>
+              <button type="button" class="tag-btn" data-tag="chemical">Chemical processing</button>
+              <button type="button" class="tag-btn" data-tag="plastics">Plastics / injection</button>
+              <button type="button" class="tag-btn" data-tag="food">Food & beverage</button>
+              <button type="button" class="tag-btn" data-tag="logistics">Logistics / warehousing</button>
+              <button type="button" class="tag-btn" data-tag="other">Other</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section C: Equipment (Industrial) -->
+        <div class="card" id="equipment-card-industrial">
+          <p class="section-eyebrow">What is installed on site?</p>
+          <div class="checkbox-grid" id="equipment-checks">
+            <div class="check-option" data-value="cnc">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">CNC / robotics / servo drives</span>
+            </div>
+            <div class="check-option" data-value="conveyors">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Conveyors / automated handling</span>
+            </div>
+            <div class="check-option" data-value="pumps">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Pumps / compressors (VFDs)</span>
+            </div>
+            <div class="check-option" data-value="chargers">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">EV chargers / DC loads</span>
+            </div>
+            <div class="check-option" data-value="lighting">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">LED lighting systems</span>
+            </div>
+            <div class="check-option" data-value="hvac">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">HVAC / climate control</span>
+            </div>
+            <div class="check-option" data-value="highbay">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">High-bay warehouse / AS-RS</span>
+            </div>
+            <div class="check-option" data-value="welding">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Welding / induction heating</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section C: Charging infrastructure (EV Depot) -->
+        <div class="card" id="equipment-card-logistics" style="display:none;">
+          <p class="section-eyebrow">Charging Infrastructure</p>
+          <div class="field-row">
+            <div class="field">
+              <label for="num-chargers">Number of charging outlets</label>
+              <input type="number" id="num-chargers" placeholder="e.g. 10" min="1" max="200" />
+            </div>
+            <div class="field">
+              <label for="charger-power">Charger power per outlet (kW)</label>
+              <select id="charger-power">
+                <option value="" disabled selected>Select size</option>
+                <option value="22">22 kW (AC)</option>
+                <option value="50">50 kW (DC)</option>
+                <option value="150">150 kW (DC)</option>
+                <option value="300">300 kW (DC)</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field">
+              <label for="grid-connection-kw">Available grid connection (kW)</label>
+              <input type="number" id="grid-connection-kw" placeholder="e.g. 500" min="0" />
+              <span class="field-hint">Current grid connection capacity at the site</span>
+            </div>
+          </div>
+          <div class="checkbox-grid" id="equipment-checks-logistics" style="margin-top:16px;">
+            <div class="check-option" data-value="highbay-wh">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">High-bay warehouse</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section D: Evolution -->
+        <div class="card">
+          <p class="section-eyebrow">What is changing in the next years?</p>
+          <div class="checkbox-grid" id="evolution-checks">
+            <div class="check-option" data-value="pv">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">PV installation</span>
+            </div>
+            <div class="check-option" data-value="storage">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Battery storage</span>
+            </div>
+            <div class="check-option" data-value="electrification-heat">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Electrification (heat)</span>
+            </div>
+            <div class="check-option" data-value="electrification-vehicles">
+              <input type="checkbox" />
+              <span class="check-box"></span>
+              <span class="check-option-text">Electrification (vehicles)</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section E: Upload (optional, moved to bottom) -->
+        <div class="card">
+          <p class="section-eyebrow">Import Existing Data (optional)</p>
+          <div class="upload-grid">
+            <label class="upload-zone" id="upload-diagrams">
+              <input type="file" accept=".pdf,.dwg,.dxf" />
+              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><polyline points="9 15 12 12 15 15"/></svg>
+              <div class="upload-label">Electrical diagrams</div>
+              <div class="upload-formats">PDF, DWG, EPLAN</div>
+              <div class="upload-filename"></div>
+            </label>
+            <label class="upload-zone" id="upload-load">
+              <input type="file" accept=".csv,.xlsx,.xls" />
+              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+              <div class="upload-label">Load data</div>
+              <div class="upload-formats">CSV, Excel</div>
+              <div class="upload-filename"></div>
+            </label>
+            <label class="upload-zone" id="upload-equipment">
+              <input type="file" accept=".csv,.xlsx,.xls,.pdf" />
+              <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="15" y2="16"/></svg>
+              <div class="upload-label">Equipment list</div>
+              <div class="upload-formats">Excel, ERP export</div>
+              <div class="upload-filename"></div>
+            </label>
+          </div>
+          <p class="upload-note">Improves insight quality — not required.</p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-center">
+          <button class="btn-primary" id="btn-analyze" disabled>
+            Analyze System
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+      </div><!-- /screen-1 -->
+
+      <!-- ═══ SCREEN 2 — SYSTEM UNDERSTANDING ════════════════ -->
+      <div class="screen" id="screen-2">
+
+        <div class="screen-header">
+          <h1>Your System at a Glance</h1>
+          <p>How a DC backbone transforms your energy architecture.</p>
+        </div>
+
+        <div class="card arch-comparison-card" id="architecture-diagram">
+          <!-- Rendered by JS: unified AC vs DC architecture comparison -->
+        </div>
+
+        <p class="disclaimer">Indicative system model based on typical equipment behavior. Not a substitute for detailed engineering analysis.</p>
+
+        <!-- Nav -->
+        <div class="cta-row">
+          <button class="btn-back" onclick="showScreen(1)">&larr; Back to input</button>
+          <button class="btn-primary" onclick="showScreen(3)">
+            See Impact
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </button>
+        </div>
+
+      </div><!-- /screen-2 -->
+
+      <!-- ═══ SCREEN 3 — IMPACT ══════════════════════════════ -->
+      <div class="screen" id="screen-3">
+
+        <div class="screen-header">
+          <h1>Estimated Impact</h1>
+          <p>High-level assessment based on your site profile. All figures are indicative ranges.</p>
+        </div>
+
+        <!-- Scenario selector (hidden — single scenario mode) -->
+        <div class="card" id="scenario-selector-card" style="display:none;">
+          <div id="scenario-selector" class="scenario-selector-grid"></div>
+        </div>
+
+        <!-- KPI tiles -->
+        <div class="kpi-tiles-top" id="kpi-tiles-top">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Assessment -->
+        <div class="card">
+          <p class="section-eyebrow">Assessment</p>
+          <p class="card-title" id="assessment-title">What drives savings at your site</p>
+          <div id="interpretation">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+        <!-- Scenario comparison table (hidden — single scenario mode) -->
+        <div class="card" id="comparison-table-card" style="display:none;">
+          <div id="comparison-table-wrap"></div>
+        </div>
+
+        <!-- Business Case -->
+        <div class="card" id="business-case-section">
+          <p class="section-eyebrow">Indicative Business Case</p>
+          <p class="card-title">Investment & Return Overview</p>
+          <p class="card-sub">Scaled estimates based on ODCA reference data for a DC backbone deployment. All figures are indicative.</p>
+          <div id="capex-table"></div>
+          <hr class="card-divider">
+          <div id="cashflow-chart-wrap"></div>
+          <p class="capex-note">Indicative estimate based on ODCA reference data. Actual figures may vary depending on site specifics.</p>
+        </div>
+
+        <!-- Recommendation -->
+        <div id="recommendation-section">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Navigation -->
+        <div class="cta-row">
+          <button class="btn-back" onclick="showScreen(2)">&larr; Back to System</button>
+        </div>
+        <div class="final-ctas" id="final-ctas">
+          <!-- Rendered by JS -->
+        </div>
+        <button class="reset-link" onclick="resetTool()">Start over with new inputs</button>
+
+      </div><!-- /screen-3 -->
+
+      <!-- ═══ SCREEN 4 — ENGINEERING PACKAGE ══════════════════ -->
+      <div class="screen" id="screen-4">
+
+        <div class="screen-header">
+          <h1>Engineering Package</h1>
+          <p>Sample output from the Kodnyx design platform. This is an indicative preview — not a final deliverable.</p>
+        </div>
+
+        <!-- A: System Architecture -->
+        <div class="card" id="eng-architecture">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- B: Equipment Schedule -->
+        <div class="card" id="eng-equipment">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- C: Technical Specifications -->
+        <div class="card" id="eng-specs">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- D: Implementation Timeline -->
+        <div class="card" id="eng-timeline">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- E: Safety & Compliance -->
+        <div class="card" id="eng-safety">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- Navigation -->
+        <div class="cta-row">
+          <button class="btn-back" onclick="showScreen(3)">&larr; Back to Impact</button>
+        </div>
+
+      </div><!-- /screen-4 -->
+
+    </div><!-- /tool-shell -->
+  </main>
+
+  <!-- ═══ FOOTER ══════════════════════════════════════════════ -->
+  <footer>
+    <span class="footer-copy">&copy; 2026 Kodnyx UG</span>
+    <a href="https://kodnyx.com" target="_blank" class="footer-link">kodnyx.com</a>
+  </footer>
+
+  <!-- ═══ JAVASCRIPT ══════════════════════════════════════════ -->
+  <script>
+    /* ─── STATE ───────────────────────────────────────────────── */
+    let currentScreen = 0;
+    const state = {
+      segment: null,
+      projectPhase: null,
+      pain: null,
+      annualKwh: 0,
+      peakKw: 0,
+      processes: [],
+      equipment: [],
+      evolution: [],
+      files: []
+    };
+
+    const PAIN_OPTIONS = {
+      industrial: [
+        { id: 'high_bill', label: 'My electricity bill is too high' },
+        { id: 'pv_payback', label: 'My PV installation barely pays back' },
+        { id: 'grid_limit', label: "I need to expand but my grid connection can't support it" },
+        { id: 'carbon', label: 'I need to cut my carbon footprint' }
+      ],
+      logistics: [
+        { id: 'grid_capacity', label: "I can't get enough grid connection capacity for my fleet" },
+        { id: 'infra_cost', label: 'Charging infrastructure is taking too long and costing too much' },
+        { id: 'fleet_electrify', label: "I need to electrify my fleet but the infrastructure isn't there yet" },
+        { id: 'peak_demand', label: 'My peak demand is driving up my energy costs' }
+      ]
+    };
+    let results = null;
+    let selectedScenario = 'fulldc';
+
+    /* ─── ODCA REFERENCE DATA (3-case model) ─────────────────── */
+    const ODCA_REF = {
+      baselineKwh: 17263000,
+      rate: 0.20,
+      co2Factor: 0.345,
+      baselinePeakMW: 4.4,
+      scenarios: {
+        baseline: {
+          label: 'AC Baseline',
+          shortLabel: 'Current',
+          description: 'Conventional AC factory',
+          architecture: 'Conventional AC factory',
+          savingsPct: 0,
+          annualMwh: 17263,
+          annualCostEur: 3452600,
+          annualSavingsEur: 0,
+          energySavedMwh: 0,
+          co2eSavedTons: 0,
+          peakReductionRange: [0, 0],
+          peakMwRange: [4.4, 4.4],
+          capexUpliftRange: [0, 0],
+          implTime: 'Standard AC project',
+          riskLevel: 'Low',
+          positioning: 'Status quo',
+          pvDesc: '530 kWp, AC-coupled / conventional',
+          batteryDesc: 'None / optional AC-side',
+          dcBusDesc: 'None',
+          aicDesc: 'Conventional transformer + distributed rectifiers',
+          loadsDesc: 'Standard AC loads',
+          recupDesc: 'Mostly lost locally',
+          peakShavingDesc: 'Limited',
+          gridImplication: 'Full peak capacity required'
+        },
+        hybrid: {
+          label: 'Hybrid AC/DC',
+          shortLabel: 'ODCA Meta Case',
+          description: 'AC factory + selected 650 V DC island',
+          architecture: 'AC factory + selected 650 V DC island',
+          savingsPct: 12.47,
+          annualMwh: 15110,
+          annualCostEur: 3022000,
+          annualSavingsEur: 431000,
+          energySavedMwh: 2153,
+          co2eSavedTons: 743,
+          peakReductionRange: [20, 45],
+          peakMwRange: [2.4, 3.5],
+          capexUpliftRange: [15, 30],
+          implTime: '6–9 months',
+          riskLevel: 'Medium',
+          positioning: 'Pragmatic retrofit / fast ROI',
+          pvDesc: '530 kWp, partially DC-coupled',
+          batteryDesc: '500 kWh / 250 kW DC-coupled',
+          dcBusDesc: 'One DC island',
+          aicDesc: '750 kW–1 MW AIC for DC island',
+          loadsDesc: 'PV, BESS, selected drives / machines',
+          recupDesc: 'Partial recuperation within DC island',
+          peakShavingDesc: 'BESS + DC island control',
+          gridImplication: 'Smaller transformer / reduced peak tariffs possible'
+        },
+        fulldc: {
+          label: 'Full DC Factory',
+          shortLabel: '25% Target Case',
+          description: 'Facility-wide 650 V DC backbone',
+          architecture: 'Facility-wide 650 V DC backbone',
+          savingsPct: 25.0,
+          annualMwh: 12947,
+          annualCostEur: 2589400,
+          annualSavingsEur: 863000,
+          energySavedMwh: 4316,
+          co2eSavedTons: 1489,
+          peakReductionRange: [40, 70],
+          peakMwRange: [1.3, 2.6],
+          capexUpliftRange: [40, 70],
+          implTime: '9–18 months',
+          riskLevel: 'High',
+          positioning: 'Strategic end-state / maximum value',
+          pvDesc: '530 kWp fully DC-coupled, expandable',
+          batteryDesc: '1,000 kWh / 500 kW DC-coupled',
+          dcBusDesc: 'Main DC backbone + selected sub-zones',
+          aicDesc: '~4.4 MW modular AIC / grid interface',
+          loadsDesc: 'Drives, robots, CNC, high-bay, lighting, EV charging, PV, BESS',
+          recupDesc: 'System-wide recuperation via shared DC bus',
+          peakShavingDesc: 'BESS + AIC + full load orchestration',
+          gridImplication: 'Major grid-connection relief; may defer upgrade'
+        }
+      }
+    };
+
+    const SEGMENT_PROFILES = {
+      industrial: {
+        label: 'Industrial Manufacturing',
+        leadMetrics: ['annualRecuperationValue', 'capexDelta', 'paybackMonths'],
+        secondaryMetrics: ['energySavingsPct', 'co2eSaved', 'peakReduction'],
+        dominantDrivers: ['recuperation', 'conversionElimination', 'peakShaving'],
+        defaultEquipment: ['cnc', 'pumps'],
+        defaultProcessTags: ['metal-forming'],
+        brownfieldViable: 'conditional',
+        greenfield: { capexMultiplier: 1.0, paybackMultiplier: 1.0 },
+        brownfield: { capexMultiplier: 1.55, paybackMultiplier: 2.2 },
+        triggerConditions: [
+          'Machine cluster replacement or expansion cycle',
+          'New PV or battery storage investment',
+          'Grid capacity constraint or transformer upgrade',
+          'Planned facility extension or new production hall'
+        ],
+        cta: {
+          primary: 'Map your machine cluster for DC compatibility',
+          secondary: 'Book a DC architecture workshop'
+        },
+        notRecommendedCTA: 'Discuss trigger scenarios with a DC specialist',
+        notRecommendedReason: 'DC retrofit economics in existing industrial facilities are structurally challenging at current component costs. Protection device hardware and installation complexity drive payback periods beyond typical investment horizons.'
+      },
+      logistics: {
+        label: 'Logistics & EV Depot',
+        leadMetrics: ['gridCapacityFreed', 'paybackMonths', 'cableSavings'],
+        secondaryMetrics: ['annualSavings', 'peakReduction', 'co2eSaved'],
+        dominantDrivers: ['gridCapacity', 'cableSavings', 'peakShaving'],
+        defaultEquipment: ['chargers', 'conveyors'],
+        defaultProcessTags: ['logistics'],
+        brownfieldViable: 'rarely',
+        greenfield: { capexMultiplier: 0.9, paybackMultiplier: 0.8 },
+        brownfield: { capexMultiplier: 1.8, paybackMultiplier: 3.0 },
+        triggerConditions: [
+          'Fleet electrification or charging infrastructure build-out',
+          'Grid capacity constraint blocking expansion',
+          'New depot or warehouse construction',
+          'Substation or transformer upgrade timeline'
+        ],
+        cta: {
+          primary: 'Get a site-specific grid capacity and depot architecture analysis',
+          secondary: 'Model your fleet charging infrastructure'
+        },
+        notRecommendedCTA: 'Review when fleet electrification or site expansion is planned',
+        notRecommendedReason: 'DC depot retrofits face high infrastructure replacement costs. The economics improve significantly with greenfield construction or when a grid capacity constraint forces architectural change.'
+      },
+      datacentre: {
+        label: 'Data Centre',
+        comingSoon: true,
+        defaultEquipment: [],
+        defaultProcessTags: [],
+        brownfieldViable: 'conditional',
+        greenfield: { capexMultiplier: 1.0, paybackMultiplier: 1.0 },
+        brownfield: { capexMultiplier: 1.5, paybackMultiplier: 2.0 }
+      },
+      officebuildings: {
+        label: 'Office Buildings',
+        comingSoon: true,
+        defaultEquipment: [],
+        defaultProcessTags: [],
+        brownfieldViable: 'conditional',
+        greenfield: { capexMultiplier: 1.0, paybackMultiplier: 1.0 },
+        brownfield: { capexMultiplier: 1.5, paybackMultiplier: 2.0 }
+      }
+    };
+
+    const BOM_SCENARIO_SPECS = {
+      hybrid: {
+        aicRating: '750 kW–1 MW',
+        pvInterface: '500–600 kW',
+        bess: '500 kWh / 250 kW',
+        switchgear: 'One DC protection cabinet',
+        busbar: 'One DC island',
+        recupLoads: 'Selected',
+        monitoring: 'SCADA + protection'
+      },
+      fulldc: {
+        aicRating: '4.4 MW modular AIC',
+        pvInterface: '600 kW MPPT / DC interface',
+        bess: '1,000 kWh / 500 kW',
+        switchgear: 'Main DC switchgear + zonal protection',
+        busbar: 'Backbone + sub-distribution zones',
+        recupLoads: 'Broad drive/robot/high-bay integration',
+        monitoring: 'SCADA + optimization + predictive control'
+      }
+    };
+
+    function getScenarioData(key) {
+      const ref = ODCA_REF.scenarios[key];
+      const sf = state.annualKwh > 0 ? state.annualKwh / ODCA_REF.baselineKwh : 1;
+      const peakSf = state.peakKw > 0 ? state.peakKw / (ODCA_REF.baselinePeakMW * 1000) : sf;
+      return {
+        ...ref,
+        annualMwh: ref.annualMwh * sf,
+        annualCostEur: ref.annualCostEur * sf,
+        annualSavingsEur: ref.annualSavingsEur * sf,
+        energySavedMwh: ref.energySavedMwh * sf,
+        co2eSavedTons: ref.co2eSavedTons * sf,
+        peakMwRange: [ref.peakMwRange[0] * peakSf, ref.peakMwRange[1] * peakSf],
+        peakReductionMid: (ref.peakReductionRange[0] + ref.peakReductionRange[1]) / 2,
+      };
+    }
+
+    /* ─── NAVIGATION ─────────────────────────────────────────── */
+    function showScreen(n) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById('screen-' + n).classList.add('active');
+      currentScreen = n;
+
+      const stepper = document.getElementById('stepper');
+      if (n <= 3) {
+        stepper.classList.remove('hidden');
+        updateStepper(n);
+      } else {
+        stepper.classList.add('hidden');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+      if (n === 1) {
+        renderPainPicker();
+        const isLogistics = state.segment === 'logistics';
+        document.getElementById('equipment-card-industrial').style.display = isLogistics ? 'none' : '';
+        document.getElementById('equipment-card-logistics').style.display = isLogistics ? '' : 'none';
+      }
+      if (n === 2) renderScreen2();
+      if (n === 3) renderScreen3();
+      if (n === 4) renderScreen4();
+    }
+
+    function stepClick(n) {
+      const stepEl = document.querySelector(`.step[data-step="${n}"]`);
+      if (stepEl && (stepEl.classList.contains('completed') || stepEl.classList.contains('active'))) {
+        showScreen(n);
+      }
+    }
+
+    function updateStepper(active) {
+      document.querySelectorAll('.step').forEach(s => {
+        const step = parseInt(s.dataset.step);
+        s.classList.remove('active', 'completed');
+        if (step === active) s.classList.add('active');
+        else if (step < active) {
+          s.classList.add('completed');
+          s.querySelector('.step-circle').innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>';
+        } else {
+          s.querySelector('.step-circle').textContent = step + 1;
+        }
+      });
+      document.getElementById('line-0-1').classList.toggle('done', active >= 1);
+      document.getElementById('line-1-2').classList.toggle('done', active >= 2);
+      document.getElementById('line-2-3').classList.toggle('done', active >= 3);
+    }
+
+    function resetTool() {
+      state.segment = null;
+      state.projectPhase = null;
+      state.pain = null;
+      state.annualKwh = 0;
+      state.peakKw = 0;
+      state.processes = [];
+      state.equipment = [];
+      state.evolution = [];
+      state.files = [];
+      results = null;
+      selectedScenario = 'fulldc';
+      state.numChargers = 0;
+      state.chargerPowerKw = 0;
+      state.gridConnectionKw = 0;
+
+      document.querySelectorAll('.segment-card').forEach(c => c.classList.remove('segment-active'));
+      document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('phase-active'));
+      document.getElementById('btn-start-diagnostic').disabled = true;
+
+      document.getElementById('annual-kwh').value = '';
+      document.getElementById('peak-kw').value = '';
+      document.getElementById('num-chargers').value = '';
+      document.getElementById('charger-power').selectedIndex = 0;
+      document.getElementById('grid-connection-kw').value = '';
+      document.querySelectorAll('.tag-btn').forEach(t => t.classList.remove('selected'));
+      document.querySelectorAll('.check-option').forEach(c => {
+        c.classList.remove('selected');
+        c.querySelector('input').checked = false;
+      });
+      document.querySelectorAll('.upload-zone').forEach(z => {
+        z.classList.remove('uploaded');
+        z.querySelector('.upload-filename').textContent = '';
+      });
+      document.getElementById('btn-analyze').disabled = true;
+      document.getElementById('pain-picker').innerHTML = '';
+      document.getElementById('brownfield-early-warning').innerHTML = '';
+      showScreen(0);
+    }
+
+    /* ─── CHECKBOX & TAG HANDLERS ─────────────────────────────── */
+    document.querySelectorAll('.check-option').forEach(opt => {
+      opt.addEventListener('click', () => {
+        opt.classList.toggle('selected');
+        const cb = opt.querySelector('input');
+        cb.checked = opt.classList.contains('selected');
+      });
+    });
+
+    document.querySelectorAll('.tag-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        btn.classList.toggle('selected');
+      });
+    });
+
+    /* ─── FILE UPLOAD SIMULATION ──────────────────────────────── */
+    document.querySelectorAll('.upload-zone input[type="file"]').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const zone = input.closest('.upload-zone');
+        zone.style.opacity = '0.6';
+        setTimeout(() => {
+          zone.style.opacity = '1';
+          zone.classList.add('uploaded');
+          zone.querySelector('.upload-filename').textContent = file.name;
+          state.files.push(file.name);
+        }, 800);
+      });
+    });
+
+    /* ─── PAIN PICKER ────────────────────────────────────────── */
+    function renderPainPicker() {
+      const container = document.getElementById('pain-picker');
+      const options = PAIN_OPTIONS[state.segment];
+      if (!options || options.length === 0) {
+        container.innerHTML = '';
+        return;
+      }
+
+      const painIcons = {
+        high_bill: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>',
+        pv_payback: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>',
+        grid_limit: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+        carbon: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>',
+        grid_capacity: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>',
+        infra_cost: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+        fleet_electrify: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="1" y="6" width="15" height="10" rx="2"/><path d="M16 10h4l3 4v2h-7"/><circle cx="7" cy="18" r="2"/><circle cx="19" cy="18" r="2"/></svg>',
+        peak_demand: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'
+      };
+
+      const cards = options.map(opt => `
+        <div class="pain-card" data-pain="${opt.id}">
+          <div class="pain-card-icon">${painIcons[opt.id] || ''}</div>
+          <div class="pain-card-label">${opt.label}</div>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <div class="card">
+          <p class="section-eyebrow">Primary Challenge</p>
+          <p class="card-title">What is the biggest challenge you're facing?</p>
+          <div class="pain-grid">${cards}</div>
+        </div>`;
+
+      container.querySelectorAll('.pain-card').forEach(card => {
+        card.addEventListener('click', () => {
+          container.querySelectorAll('.pain-card').forEach(c => c.classList.remove('pain-active'));
+          card.classList.add('pain-active');
+          state.pain = card.dataset.pain;
+          checkAnalyzeReady();
+        });
+      });
+
+      // Restore selection if going back
+      if (state.pain) {
+        const active = container.querySelector(`.pain-card[data-pain="${state.pain}"]`);
+        if (active) active.classList.add('pain-active');
+      }
+    }
+
+    function checkAnalyzeReady() {
+      const annualVal = parseFloat(document.getElementById('annual-kwh').value);
+      document.getElementById('btn-analyze').disabled = !(annualVal > 0 && state.pain);
+    }
+
+    /* ─── ANALYZE BUTTON ENABLE ───────────────────────────────── */
+    const annualInput = document.getElementById('annual-kwh');
+    const peakInput = document.getElementById('peak-kw');
+    const analyzeBtn = document.getElementById('btn-analyze');
+
+    annualInput.addEventListener('input', () => {
+      checkAnalyzeReady();
+    });
+
+    analyzeBtn.addEventListener('click', () => {
+      // Gather state
+      state.annualKwh = (parseFloat(annualInput.value) || 0) * 1000; // input is MWh, stored as kWh
+      state.peakKw = parseFloat(peakInput.value) || 0;
+      state.processes = [...document.querySelectorAll('.tag-btn.selected')].map(b => b.dataset.tag);
+
+      if (state.segment === 'logistics') {
+        state.numChargers = parseInt(document.getElementById('num-chargers').value) || 4;
+        state.chargerPowerKw = parseInt(document.getElementById('charger-power').value) || 150;
+        state.gridConnectionKw = parseInt(document.getElementById('grid-connection-kw').value) || 0;
+        const logEquip = [...document.querySelectorAll('#equipment-checks-logistics .check-option.selected')].map(c => c.dataset.value);
+        state.equipment = ['chargers', ...logEquip];
+      } else {
+        state.equipment = [...document.querySelectorAll('#equipment-checks .check-option.selected')].map(c => c.dataset.value);
+      }
+
+      state.evolution = [...document.querySelectorAll('#evolution-checks .check-option.selected')].map(c => c.dataset.value);
+
+      // Calculate
+      results = calculate(state);
+
+      // Show loading
+      const loading = document.getElementById('loading');
+      loading.classList.add('visible');
+      setTimeout(() => {
+        loading.classList.remove('visible');
+        showScreen(2);
+      }, 1400);
+    });
+
+    /* ─── CALCULATION ENGINE ──────────────────────────────────── */
+    function calculate(s) {
+      const RATE = 0.20; // €/kWh — ODCA reference rate
+      const annualCost = s.annualKwh * RATE;
+
+      // ── Savings lever decomposition (ODCA-aligned) ────────────
+      // Lever 1: Drive/bus efficiency — centralized AIC eliminates
+      // distributed AC↔DC conversions and enables braking energy sharing.
+      // ODCA reference site (CNC drives + pumps): 6.49%
+      let driveSavingsPct = 0;
+      if (s.equipment.includes('cnc'))       driveSavingsPct += 0.045; // dominant: servo/robot drives
+      if (s.equipment.includes('pumps'))     driveSavingsPct += 0.020; // VFD motors, centralized conv.
+      if (s.equipment.includes('conveyors')) driveSavingsPct += 0.015; // regeneration on decel
+      if (s.equipment.includes('chargers'))  driveSavingsPct += 0.010; // direct DC coupling
+
+      // Lever 2: PV direct coupling — DC/DC replaces AC inverter.
+      // ODCA reference: 5.98% (530 kWp PV on 17,263 MWh/a site)
+      const pvCouplingPct = s.evolution.includes('pv') ? 0.0598 : 0;
+
+      const totalSavingsPct = driveSavingsPct + pvCouplingPct;
+
+      // ── Scenario ranges derived from savings levers ───────────
+      // Hybrid (entry, one cluster, no PV): drive lever at 50–80%
+      const hybridLowPct  = driveSavingsPct * 0.50;
+      const hybridHighPct = driveSavingsPct * 0.80;
+      // Full scope: total savings ±10% (site variation)
+      const fullLowPct  = totalSavingsPct * 0.90;
+      const fullHighPct = totalSavingsPct * 1.10;
+
+      // ── Sankey visual model (kept independent for illustration) ─
+      const equipCount = s.equipment.length;
+      const convLossPct = 0.03 + equipCount * 0.012;
+      const hasRecup = s.equipment.includes('cnc') || s.equipment.includes('conveyors');
+      const recupLostPct = hasRecup ? 0.03 : 0.008;
+
+      const hasPV = s.evolution.includes('pv');
+      const hasStorage = s.evolution.includes('storage');
+
+      const acInput = 100;
+      const acConvLoss = convLossPct * 100;
+      const acRecupLost = recupLostPct * 100;
+      const acRecupRecovered = hasRecup ? 1.0 : 0.2;
+      const acUseful = acInput - acConvLoss - acRecupLost;
+      const dcConvLoss = acConvLoss * 0.35;
+      const dcRecupRecovered = hasRecup ? 3.5 : 0.5;
+      const dcRecupLost = hasRecup ? 0.5 : 0.3;
+      const dcUseful = acInput - dcConvLoss - dcRecupLost;
+
+      // ── Business case ─────────────────────────────────────────
+      // Scale factor: reference = ODCA measured AC consumption 17,263 MWh/a
+      const sf = Math.max(0.1, Math.min(s.annualKwh / 17263000, 5.0));
+      const capexBreakdown = {
+        aicConverter:   420000 * sf,
+        dcDcConverters: 330000 * sf,
+        switchgear:     270000 * sf,
+        cabling:        210000 * sf,
+        installation:   210000 * sf,
+        engineering:     73681 * sf
+      };
+      const capexTotal = Object.values(capexBreakdown).reduce((a, b) => a + b, 0);
+      const annualEnergySavingsKwh = s.annualKwh * totalSavingsPct;
+      const annualCostSavingsFull  = annualEnergySavingsKwh * RATE;
+      const simplePayback = annualCostSavingsFull > 0 ? capexTotal / annualCostSavingsFull : 0;
+
+      return {
+        annualCost,
+        convLossPct, hasRecup, hasPV, hasStorage,
+        recupLostPct,
+        driveSavingsPct, pvCouplingPct, totalSavingsPct,
+        hybridLow: annualCost * hybridLowPct,
+        hybridHigh: annualCost * hybridHighPct,
+        fullLow: annualCost * fullLowPct,
+        fullHigh: annualCost * fullHighPct,
+        hybridLowPct, hybridHighPct, fullLowPct, fullHighPct,
+        // Sankey
+        ac: { input: acInput, convLoss: acConvLoss, recupLost: acRecupLost, recupRecovered: acRecupRecovered, useful: acUseful },
+        dc: { input: acInput, convLoss: dcConvLoss, recupRecovered: dcRecupRecovered, recupLost: dcRecupLost, useful: dcUseful },
+        // Business case
+        scaleFactor: sf,
+        capexBreakdown,
+        capexTotal,
+        annualEnergySavingsKwh,
+        annualCostSavingsFull,
+        simplePayback
+      };
+    }
+
+    /* ─── REFERENCE DATA (named industry sources) ──────────── */
+    const REFERENCE_DATA = {
+      recuperation: {
+        cnc_robotics: { range: '4–8%', source: 'Daimler / BMW Dingolfing' },
+        highbay: { range: 'up to 85%', source: 'Schaltbau (AS/RS sub-circuit)' },
+        general_drives: { range: '4–6%', source: 'Daimler / Mercedes' }
+      },
+      peakReduction: {
+        alois_mueller: { label: '280→230 kW', source: 'Alois Müller' },
+        wittmann: { label: '80% peak reduction', source: 'Wittmann / Inof Energy' }
+      }
+    };
+
+    /* ─── SCREEN 2 RENDER ─────────────────────────────────────── */
+    function renderScreen2() {
+      renderArchitectureComparison();
+    }
+
+    function getActiveLoads(segment, equipment) {
+      if (segment === 'logistics') {
+        const loads = [];
+        const numChargers = state.numChargers || 4;
+        const displayChargers = Math.min(numChargers, 6);
+        for (let i = 1; i <= displayChargers; i++) {
+          const label = numChargers > displayChargers && i === displayChargers
+            ? `CP ${i}+ (${numChargers} total)`
+            : `Charging Pt ${i}`;
+          loads.push({ label, icon: 'ev', canRecuperate: false, acLossPct: 6.0 });
+        }
+        if (equipment.includes('highbay-wh')) {
+          loads.push({ label: 'High-Bay WH', icon: 'wh', canRecuperate: true, acLossPct: 3.0 });
+        }
+        return loads;
+      }
+      const loads = [];
+      if (equipment.includes('cnc')) loads.push({ label: 'CNC / Robotics', icon: 'cnc', canRecuperate: true, acLossPct: 3.0 });
+      if (equipment.includes('pumps')) loads.push({ label: 'Pumps / VFD', icon: 'pump', canRecuperate: false, acLossPct: 2.0 });
+      if (equipment.includes('conveyors')) loads.push({ label: 'Conveyors', icon: 'conv', canRecuperate: true, acLossPct: 3.0 });
+      if (equipment.includes('chargers')) loads.push({ label: 'EV Charging', icon: 'ev', canRecuperate: false, acLossPct: 6.0 });
+      if (equipment.includes('lighting')) loads.push({ label: 'LED Lighting', icon: 'led', canRecuperate: false, acLossPct: 7.0 });
+      if (equipment.includes('hvac')) loads.push({ label: 'HVAC', icon: 'hvac', canRecuperate: false, acLossPct: 4.0 });
+      if (equipment.includes('highbay')) loads.push({ label: 'High-Bay WH', icon: 'wh', canRecuperate: true, acLossPct: 3.0 });
+      if (equipment.includes('welding')) loads.push({ label: 'Welding', icon: 'weld', canRecuperate: false, acLossPct: 6.0 });
+      if (loads.length === 0) {
+        loads.push({ label: 'Load 1', icon: 'cnc', canRecuperate: true, acLossPct: 3.0 });
+        loads.push({ label: 'Load 2', icon: 'pump', canRecuperate: false, acLossPct: 2.0 });
+      }
+      return loads;
+    }
+
+    function computeLoadPositions(count, startX, endX) {
+      const positions = [];
+      if (count === 1) { positions.push(Math.round((startX + endX) / 2)); return positions; }
+      const step = (endX - startX) / (count - 1);
+      for (let i = 0; i < count; i++) positions.push(Math.round(startX + step * i));
+      return positions;
+    }
+
+    function renderArchitectureComparison() {
+      const rac = results.ac;
+      const rdc = results.dc;
+      const hasPV = results.hasPV;
+      const hasStorage = results.hasStorage;
+      const F = 'Plus Jakarta Sans,sans-serif';
+      const isLogistics = state.segment === 'logistics';
+
+      const annualCost = results.annualCost;
+
+      function waveIcon(x, y, col) {
+        return `<path d="M ${x} ${y} q 3,-5 6,0 q 3,5 6,0 q 3,-5 6,0" stroke="${col}" stroke-width="1.8" fill="none"/>`;
+      }
+
+      function componentBox(x, y, w, h, label, sub, fill, stroke, textCol) {
+        fill = fill || '#0E4C52'; stroke = stroke || 'none'; textCol = textCol || 'white';
+        const yLabel = sub ? y + h/2 - 1 : y + h/2 + 4;
+        const subLine = sub ? `<text x="${x+w/2}" y="${y+h/2+10}" text-anchor="middle" fill="${textCol}" opacity="0.65" font-size="7.5" font-family="${F}">${sub}</text>` : '';
+        return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="6" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
+          <text x="${x+w/2}" y="${yLabel}" text-anchor="middle" fill="${textCol}" font-size="9.5" font-weight="700" font-family="${F}">${label}</text>${subLine}`;
+      }
+
+      function loadIcon(cx, cy, label, iconType) {
+        const abbrMap = { cnc: 'CNC', robot: 'M', ev: 'EV', wh: 'WH', pump: 'PMP', conv: 'CNV', led: 'LED', hvac: 'AC', weld: 'WLD' };
+        const abbr = abbrMap[iconType] || '?';
+        const shape = iconType === 'robot'
+          ? `<circle cx="${cx}" cy="${cy}" r="14" fill="none" stroke="#0E4C52" stroke-width="1.2"/>`
+          : `<rect x="${cx-14}" y="${cy-14}" width="28" height="28" rx="4" fill="none" stroke="#0E4C52" stroke-width="1.2"/>`;
+        return shape +
+          `<text x="${cx}" y="${cy+1}" text-anchor="middle" fill="#0E4C52" font-size="${abbr.length > 2 ? 6 : 7}" font-weight="700" font-family="${F}">${abbr}</text>` +
+          `<text x="${cx}" y="${cy+26}" text-anchor="middle" fill="#3A5C60" font-size="7" font-weight="600" font-family="${F}">${label}</text>`;
+      }
+
+      function trafoSymbol(cx, cy) {
+        return `<circle cx="${cx}" cy="${cy - 8}" r="10" fill="none" stroke="#0E4C52" stroke-width="1.5"/>
+          <circle cx="${cx}" cy="${cy + 8}" r="10" fill="none" stroke="#0E4C52" stroke-width="1.5"/>`;
+      }
+
+      // ── Dynamic loads ──
+      const loads = getActiveLoads(state.segment, state.equipment);
+      const loadCount = loads.length;
+      const svgW = Math.max(680, 180 + loadCount * 110);
+      const frameW = svgW - 170;
+      const busEndX = svgW - 50;
+      const loadXs = computeLoadPositions(loadCount, 230, busEndX - 40);
+      const busY = 138;
+      const convY = 168;
+      const loadY = 252;
+
+      // ── Pain annotation helper ──
+      function painAnnotation(pain, context) {
+        if (!pain) return '';
+        const annotations = {
+          high_bill:       { target: 'loss', label: 'Total conversion losses: ' + fmtK(totalAcLossEur) + '/yr', col: '#e74c3c' },
+          pv_payback:      { target: 'pv',   label: 'PV conversion loss: ' + fmtK(annualCost * 0.03) + '/yr', col: '#e74c3c' },
+          grid_limit:      { target: 'grid', label: 'Your grid connection limit', col: '#F79646' },
+          grid_capacity:   { target: 'grid', label: 'Grid bottleneck', col: '#F79646' },
+          carbon:          { target: 'loss', label: Math.round(state.annualKwh * 0.000345) + ' t CO₂/yr from waste energy', col: '#F79646' },
+          peak_demand:     { target: 'grid', label: 'Peak: ' + (state.peakKw || '—') + ' kW driving demand charges', col: '#F79646' },
+          infra_cost:      { target: 'loss', label: 'Infrastructure cost multiplied', col: '#e74c3c' },
+          fleet_electrify: { target: 'grid', label: 'Insufficient grid capacity for fleet', col: '#F79646' }
+        };
+        const a = annotations[pain];
+        if (!a) return '';
+        const col = a.col;
+        if (a.target === 'grid' && context === 'ac') {
+          const tw = Math.min(a.label.length * 6.5 + 16, 220);
+          return `<rect x="6" y="78" width="${tw}" height="22" rx="5" fill="${col}" opacity="0.18"/>
+            <text x="14" y="93" fill="${col}" font-size="9" font-weight="700" font-family="${F}">${a.label}</text>`;
+        }
+        if (a.target === 'loss' && context === 'ac') {
+          const mx = loadXs[Math.floor(loadXs.length / 2)] || 395;
+          const tw = Math.min(a.label.length * 6 + 16, 220);
+          const annotY = loadY + 38;
+          return `<rect x="${mx - tw/2}" y="${annotY}" width="${tw}" height="22" rx="5" fill="${col}" opacity="0.15"/>
+            <text x="${mx}" y="${annotY + 15}" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="${F}">${a.label}</text>`;
+        }
+        if (a.target === 'pv' && context === 'ac' && hasPV) {
+          return `<text x="345" y="112" text-anchor="middle" fill="${col}" font-size="9" font-weight="700" font-family="${F}">${a.label}</text>`;
+        }
+        return '';
+      }
+
+      // ═══ AC Section SVG ═══
+      let acSources = '';
+      if (hasPV) {
+        acSources += componentBox(310, 16, 70, 28, 'PV', null, 'none', '#0E4C52', '#0E4C52');
+        acSources += `<line x1="345" y1="44" x2="345" y2="56" stroke="#0E4C52" stroke-width="1.5"/>`;
+        acSources += componentBox(317, 56, 56, 24, 'DC / AC', null, '#0E4C52');
+        acSources += waveIcon(328, 84, '#e74c3c');
+        acSources += `<text x="345" y="98" text-anchor="middle" fill="#e74c3c" font-size="7" font-weight="700" font-family="${F}">~3% loss</text>`;
+        acSources += `<line x1="345" y1="80" x2="345" y2="102" stroke="#0E4C52" stroke-width="1.2"/>`;
+        acSources += `<path class="flow-dc" d="M 345 102 L 345 ${busY}" stroke="#5FB7B0" stroke-width="2" fill="none" opacity="0.6"/>`;
+      }
+      if (hasStorage) {
+        const bx = hasPV ? 430 : 310;
+        acSources += componentBox(bx, 16, 70, 28, 'BESS', null, 'none', '#0E4C52', '#0E4C52');
+        acSources += `<line x1="${bx+35}" y1="44" x2="${bx+35}" y2="56" stroke="#0E4C52" stroke-width="1.5"/>`;
+        acSources += componentBox(bx + 7, 56, 56, 24, 'DC / AC', null, '#0E4C52');
+        acSources += waveIcon(bx + 18, 84, '#e74c3c');
+        acSources += `<text x="${bx+35}" y="98" text-anchor="middle" fill="#e74c3c" font-size="7" font-weight="700" font-family="${F}">~3% per pass</text>`;
+        acSources += `<line x1="${bx+35}" y1="80" x2="${bx+35}" y2="102" stroke="#0E4C52" stroke-width="1.2"/>`;
+        // Bidirectional: discharge (down to bus) and charge (up from bus) — each pass through converter
+        acSources += `<path class="flow-bess-discharge" d="M ${bx+30} 56 L ${bx+30} ${busY}" stroke="#5FB7B0" stroke-width="2" fill="none" opacity="0.6"/>`;
+        acSources += `<path class="flow-bess-charge" d="M ${bx+40} 56 L ${bx+40} ${busY}" stroke="#F79646" stroke-width="1.5" fill="none" opacity="0.5"/>`;
+        acSources += `<text x="${bx+35}" y="108" text-anchor="middle" fill="#e74c3c" font-size="6.5" font-style="italic" font-family="${F}">charge + discharge = 2× conversion</text>`;
+      }
+
+      let acConverters = '';
+      let acLoads = '';
+      const acCableBase = isLogistics ? 4 : 1.5;
+      let totalAcLossEur = 0;
+      loadXs.forEach((lx, i) => {
+        const load = loads[i];
+        const lossPct = load.acLossPct || 3.0;
+        const lossEur = annualCost * lossPct / 100;
+        totalAcLossEur += lossEur;
+        const lossLabel = '~' + lossPct.toFixed(0) + '% ≈ ' + fmtK(lossEur) + '/yr';
+        const cableW = isLogistics ? Math.max(2, acCableBase - i * 0.3) : 1.5;
+        acConverters += `<line x1="${lx}" y1="${busY}" x2="${lx}" y2="${convY}" stroke="#0E4C52" stroke-width="${cableW}"/>`;
+        acConverters += componentBox(lx - 28, convY, 56, 26, 'AC / DC', null, '#0E4C52');
+        acConverters += `<line x1="${lx}" y1="${convY + 26}" x2="${lx}" y2="${convY + 32}" stroke="#0E4C52" stroke-width="${cableW}"/>`;
+        acConverters += waveIcon(lx - 9, convY + 36, '#e74c3c');
+        acConverters += `<text x="${lx}" y="${convY + 52}" text-anchor="middle" fill="#e74c3c" font-size="8" font-weight="700" font-family="${F}">${lossLabel}</text>`;
+        acConverters += `<line x1="${lx}" y1="${convY + 56}" x2="${lx}" y2="${loadY - 18}" stroke="#0E4C52" stroke-width="${cableW}"/>`;
+        acConverters += `<path class="flow-to-load" d="M ${lx - 3} ${busY} L ${lx - 3} ${loadY - 18}" stroke="#5FB7B0" stroke-width="1.5" fill="none" opacity="0.5"/>`;
+        acLoads += loadIcon(lx, loadY, load.label, load.icon);
+      });
+
+      // Grid node — show peak load if available
+      const gridSub = state.peakKw ? 'Peak: ' + state.peakKw + ' kW' : '400V 3ph';
+      const gridBottleneck = (isLogistics || (state.peakKw && state.peakKw > 1000))
+        ? `<rect x="8" y="150" width="74" height="16" rx="3" fill="#F79646" opacity="0.15"/>
+           <text x="45" y="161" text-anchor="middle" fill="#F79646" font-size="8" font-weight="700" font-family="${F}">Grid constraint</text>` : '';
+
+      const acSvg = `<svg viewBox="0 0 ${svgW} 310" xmlns="http://www.w3.org/2000/svg">
+        ${componentBox(16, 106, 58, 40, 'AC Grid', gridSub)}
+        ${gridBottleneck}
+        <path class="flow-ac" d="M 74 126 L 92 126" stroke="#0E4C52" stroke-width="3.5" fill="none"/>
+        ${trafoSymbol(106, 126)}
+        <text x="106" y="145" text-anchor="middle" fill="#7a9fa4" font-size="6.5" font-family="${F}">Trafo</text>
+        <path class="flow-ac" d="M 116 126 L 160 126 L 160 ${busY}" stroke="#0E4C52" stroke-width="3" fill="none"/>
+        <rect x="150" y="6" width="${frameW}" height="280" rx="12" fill="none" stroke="#cfd8dc" stroke-width="1.2" stroke-dasharray="6 4"/>
+        <line x1="160" y1="${busY}" x2="${busEndX}" y2="${busY}" stroke="#0E4C52" stroke-width="5" stroke-linecap="square"/>
+        <text x="${busEndX - 10}" y="${busY - 7}" text-anchor="end" fill="#0E4C52" font-size="8" font-weight="700" font-family="${F}">AC BUS</text>
+        <path class="flow-dc" d="M 160 ${busY - 6} L ${busEndX} ${busY - 6}" stroke="#5FB7B0" stroke-width="2" fill="none" opacity="0.6"/>
+        ${acSources}
+        ${acConverters}
+        ${acLoads}
+        ${painAnnotation(state.pain, 'ac')}
+      </svg>`;
+
+      // ═══ DC Section SVG ═══
+      const dcBusY = 120;
+      const dcLoadY = 218;
+      const dcLoadXs = computeLoadPositions(loadCount, 230, busEndX - 40);
+
+      let dcSources = '';
+      if (hasPV) {
+        dcSources += componentBox(260, 18, 70, 28, 'PV', null, 'none', '#1a6b73', '#1a6b73');
+        dcSources += `<text x="295" y="60" text-anchor="middle" fill="#1a6b73" font-size="6.5" font-style="italic" font-family="${F}">Direct coupling</text>`;
+        dcSources += `<path class="flow-dc" d="M 295 46 L 295 ${dcBusY}" stroke="#5FB7B0" stroke-width="2" fill="none" opacity="0.7"/>`;
+      }
+      if (hasStorage) {
+        const bx = hasPV ? 370 : 260;
+        dcSources += componentBox(bx, 18, 70, 28, 'BESS', null, 'none', '#1a6b73', '#1a6b73');
+        dcSources += `<text x="${bx+35}" y="60" text-anchor="middle" fill="#1a6b73" font-size="6.5" font-style="italic" font-family="${F}">Direct coupling</text>`;
+        dcSources += `<path class="flow-bess-discharge" d="M ${bx+30} 46 L ${bx+30} ${dcBusY}" stroke="#5FB7B0" stroke-width="2" fill="none" opacity="0.7"/>`;
+        dcSources += `<path class="flow-bess-charge" d="M ${bx+40} 46 L ${bx+40} ${dcBusY}" stroke="#F79646" stroke-width="1.5" fill="none" opacity="0.5"/>`;
+      }
+
+      let dcLoads = '';
+      let hasAnyRecup = false;
+      dcLoadXs.forEach((lx, i) => {
+        const load = loads[i];
+        const dcCableW = isLogistics ? Math.max(1, acCableBase * 0.5 - i * 0.15) : 1.5;
+        dcLoads += `<line x1="${lx}" y1="${dcBusY}" x2="${lx}" y2="${dcLoadY - 18}" stroke="#1a6b73" stroke-width="${dcCableW}"/>`;
+        if (!load.canRecuperate) {
+          dcLoads += `<path class="flow-to-load" d="M ${lx - 3} ${dcBusY} L ${lx - 3} ${dcLoadY - 18}" stroke="#5FB7B0" stroke-width="1.5" fill="none" opacity="0.5"/>`;
+        }
+        dcLoads += loadIcon(lx, dcLoadY, load.label, load.icon);
+        if (load.canRecuperate) {
+          hasAnyRecup = true;
+          let recupLabel = rdc.recupRecovered.toFixed(1) + '%';
+          let recupSource = '';
+          if (load.icon === 'cnc') {
+            recupLabel = '4–8%';
+            recupSource = 'Daimler / BMW';
+          } else if (load.icon === 'wh') {
+            recupLabel = 'up to 85%';
+            recupSource = 'Schaltbau';
+          } else if (load.icon === 'conv') {
+            recupLabel = '4–6%';
+            recupSource = 'Daimler / Mercedes';
+          }
+          dcLoads += `<path class="flow-recup" d="M ${lx + 8} ${dcBusY + 4} L ${lx + 8} ${dcLoadY - 18}" stroke="#22c55e" stroke-width="2" fill="none"/>`;
+          dcLoads += `<path class="flow-recup-down" d="M ${lx + 14} ${dcBusY + 4} L ${lx + 14} ${dcLoadY - 18}" stroke="#22c55e" stroke-width="1.5" fill="none" opacity="0.5"/>`;
+          dcLoads += `<text x="${lx + 22}" y="${dcLoadY - 28}" fill="#22c55e" font-size="7" font-weight="700" font-family="${F}">${recupLabel}</text>`;
+          if (recupSource) {
+            dcLoads += `<text x="${lx + 22}" y="${dcLoadY - 19}" fill="#22c55e" font-size="5.5" font-style="italic" font-family="${F}">as measured in ${recupSource}</text>`;
+          }
+        }
+      });
+      if (hasAnyRecup) {
+        const midX = dcLoadXs[Math.floor(dcLoadXs.length / 2)] || 395;
+        dcLoads += `<text x="${midX}" y="${dcLoadY + 42}" text-anchor="middle" fill="#22c55e" font-size="7.5" font-weight="700" font-family="${F}">Regenerative energy shared via DC bus</text>`;
+      }
+
+      const dcLossEur = annualCost * rdc.convLoss / 100;
+      const dcLossLabel = '~' + rdc.convLoss.toFixed(1) + '% ≈ ' + fmtK(dcLossEur) + '/yr';
+
+      const dcSvg = `<svg viewBox="0 0 ${svgW} 310" xmlns="http://www.w3.org/2000/svg">
+        ${componentBox(16, 92, 58, 40, 'AC Grid', gridSub)}
+        <path class="flow-ac" d="M 74 112 L 100 112" stroke="#0E4C52" stroke-width="3" fill="none"/>
+        ${componentBox(100, 96, 56, 32, 'AC / DC', null, '#0E4C52')}
+        ${waveIcon(111, 132, '#e74c3c')}
+        <text x="128" y="146" text-anchor="middle" fill="#e74c3c" font-size="7" font-weight="700" font-family="${F}">${dcLossLabel}</text>
+        <path class="flow-dc" d="M 156 112 L 170 112 L 170 ${dcBusY}" stroke="#5FB7B0" stroke-width="3" fill="none" opacity="0.7"/>
+        <rect x="150" y="6" width="${frameW}" height="280" rx="12" fill="none" stroke="#cfd8dc" stroke-width="1.2" stroke-dasharray="6 4"/>
+        <line x1="160" y1="${dcBusY}" x2="${busEndX}" y2="${dcBusY}" stroke="#1a6b73" stroke-width="7" stroke-linecap="square"/>
+        <text x="${busEndX - 10}" y="${dcBusY - 8}" text-anchor="end" fill="#1a6b73" font-size="9" font-weight="800" font-family="${F}">DC BUS</text>
+        <text x="${busEndX - 10}" y="${dcBusY + 15}" text-anchor="end" fill="#1a6b73" font-size="7" font-family="${F}">650V DC</text>
+        <path class="flow-dc" d="M 160 ${dcBusY - 7} L ${busEndX} ${dcBusY - 7}" stroke="#5FB7B0" stroke-width="2.5" fill="none" opacity="0.7"/>
+        ${dcSources}
+        ${dcLoads}
+      </svg>`;
+
+      // ═══ Insights ═══
+      function insightItem(iconSvg, text) {
+        return `<div class="arch-insight"><svg class="arch-insight-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg><span>${text}</span></div>`;
+      }
+      const tickIcon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+      const totalAcLossEurFmt = fmtK(totalAcLossEur);
+
+      const acInsights = `
+        <div class="arch-insights-title">Key Insights</div>
+        ${insightItem(tickIcon, 'Each ' + (isLogistics ? 'charger' : 'machine') + ' converts power independently — losses multiply across your facility')}
+        ${insightItem(tickIcon, 'At your consumption level, ~' + totalAcLossEurFmt + ' is lost annually before it reaches a single ' + (isLogistics ? 'charger' : 'machine'))}
+        ${insightItem(tickIcon, 'No energy sharing between loads or sources')}
+        ${insightItem(tickIcon, isLogistics ? 'Heavy AC cabling to every charging point increases infrastructure cost' : 'Inefficiencies compound across every conversion path')}`;
+
+      let dcInsightItems = '';
+      dcInsightItems += insightItem(tickIcon, 'Single central conversion reduces losses to ' + fmtK(dcLossEur) + '/yr');
+      if (hasAnyRecup) {
+        if (state.equipment.includes('cnc')) {
+          dcInsightItems += insightItem(tickIcon, 'Recuperation: 4–8% recovery (as measured in Daimler, BMW Dingolfing)');
+        } else {
+          dcInsightItems += insightItem(tickIcon, 'Recuperation: 4–6% recovery (as measured in Daimler, Mercedes)');
+        }
+      }
+      dcInsightItems += insightItem(tickIcon, 'Energy sharing enabled via DC bus — loads exchange power directly');
+      if (isLogistics) {
+        dcInsightItems += insightItem(tickIcon, 'DC 650V: thinner cables, ~50% less copper than AC 400V distribution');
+      } else {
+        dcInsightItems += insightItem(tickIcon, 'Peak shaving: 80% reduction demonstrated (Wittmann / Inof Energy)');
+      }
+
+      const dcInsights = `<div class="arch-insights-title">Key Insights</div>${dcInsightItems}`;
+
+      const legend = `<div class="arch-legend">
+        <div class="arch-legend-item"><svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#0E4C52" stroke-width="3"/></svg> AC Power</div>
+        <div class="arch-legend-item"><svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#1a6b73" stroke-width="3"/></svg> DC Power</div>
+        <div class="arch-legend-item"><svg width="18" height="12"><path d="M 0 6 q 3,-5 6,0 q 3,5 6,0 q 3,-5 6,0" stroke="#e74c3c" stroke-width="1.5" fill="none"/></svg> Losses</div>
+        <div class="arch-legend-item"><svg width="24" height="6"><line x1="0" y1="3" x2="24" y2="3" stroke="#22c55e" stroke-width="2" stroke-dasharray="4 3"/></svg> Regenerative Energy</div>
+      </div>`;
+
+      document.getElementById('architecture-diagram').innerHTML = `
+        <div class="arch-section arch-section-ac">
+          <div class="arch-section-header">
+            <span class="arch-tag arch-tag-ac">Current Setup</span>
+            <span class="arch-section-title">AC-Based System</span>
+          </div>
+          <div class="arch-content">
+            <div class="arch-diagram-wrap">${acSvg}</div>
+            <div class="arch-insights">${acInsights}</div>
+          </div>
+        </div>
+        <div class="arch-section arch-section-dc">
+          <div class="arch-section-header">
+            <span class="arch-tag arch-tag-dc">DC Architecture</span>
+            <span class="arch-section-title">DC Backbone System</span>
+          </div>
+          <div class="arch-content">
+            <div class="arch-diagram-wrap">${dcSvg}</div>
+            <div class="arch-insights">${dcInsights}</div>
+          </div>
+        </div>
+        ${legend}
+      `;
+    }
+
+    /* ─── LEGACY SANKEY/OBSERVATION CODE REMOVED ─────────────── */
+    /* (replaced by renderArchitectureComparison above)          */
+    if (false) { function _legacyRenderACSankey() {
+      const r = results.ac;
+      const lossW  = Math.max(5, Math.min(r.convLoss * 0.6, 14));
+      const recupW = Math.max(3, Math.min(r.recupRecovered * 0.9, 9));
+      const perMachine = (r.convLoss / 3).toFixed(1);
+
+      const svg = `
+      <svg viewBox="0 0 600 320" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+        <!-- Node: Grid -->
+        <rect x="16" y="128" width="74" height="44" rx="8" fill="#0E4C52"/>
+        <text x="53" y="147" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">Grid</text>
+        <text x="53" y="162" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="8.5" font-family="Plus Jakarta Sans,sans-serif">AC 400V</text>
+
+        <!-- Node: Main Distribution -->
+        <rect x="200" y="118" width="86" height="44" rx="8" fill="#0E4C52"/>
+        <text x="243" y="136" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Main</text>
+        <text x="243" y="150" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Distribution</text>
+
+        <!-- Node: Machine 1 -->
+        <rect x="402" y="40" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="443" y="64" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 1</text>
+
+        <!-- Node: Machine 2 -->
+        <rect x="402" y="121" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="443" y="145" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 2</text>
+
+        <!-- Node: Machine 3 -->
+        <rect x="402" y="202" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="443" y="226" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 3</text>
+
+        <!-- Main flow: Grid → Distribution (animated) -->
+        <path class="sf-main" d="M 90 150 C 140 150, 160 140, 200 140" stroke="#5FB7B0" stroke-width="22" fill="none" opacity="0.55" stroke-linecap="round"/>
+
+        <!-- Distribution → Machine 1 -->
+        <path class="sf-main" d="M 286 130 C 336 112, 368 72, 402 59" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <!-- Distribution → Machine 2 -->
+        <path class="sf-main" d="M 286 140 C 336 140, 368 140, 402 140" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <!-- Distribution → Machine 3 -->
+        <path class="sf-main" d="M 286 150 C 336 166, 368 208, 402 221" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+
+        <!-- Conversion losses at each machine (red animated) -->
+        <path class="sf-loss" d="M 484 48 C 510 36, 526 24, 548 18" stroke="#e74c3c" stroke-width="${lossW}" fill="none" opacity="0.75" stroke-linecap="round"/>
+        <text x="552" y="22" fill="#e74c3c" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">~${perMachine}%</text>
+        <text x="552" y="33" fill="#e74c3c" font-size="7.5" font-family="Plus Jakarta Sans,sans-serif">loss</text>
+
+        <path class="sf-loss" d="M 484 130 C 510 118, 526 108, 548 102" stroke="#e74c3c" stroke-width="${lossW}" fill="none" opacity="0.75" stroke-linecap="round"/>
+        <text x="552" y="106" fill="#e74c3c" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">~${perMachine}%</text>
+
+        <path class="sf-loss" d="M 484 210 C 510 200, 526 192, 548 188" stroke="#e74c3c" stroke-width="${lossW}" fill="none" opacity="0.75" stroke-linecap="round"/>
+        <text x="552" y="192" fill="#e74c3c" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">~${perMachine}%</text>
+
+        <!-- Total loss label -->
+        <text x="549" y="140" fill="#e74c3c" font-size="8" font-style="italic" font-family="Plus Jakarta Sans,sans-serif">${r.convLoss.toFixed(1)}% total</text>
+        <text x="549" y="150" fill="#e74c3c" font-size="8" font-style="italic" font-family="Plus Jakarta Sans,sans-serif">conv. loss</text>
+
+        <!-- Recuperation recovered (green animated) -->
+        <path class="sf-recup" d="M 402 220 C 340 268, 140 268, 90 172" stroke="#22c55e" stroke-width="${recupW}" fill="none" opacity="0.7" stroke-linecap="round"/>
+        <text x="232" y="286" text-anchor="middle" fill="#22c55e" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">${r.recupRecovered.toFixed(1)}% recuperated (partial)</text>
+
+        <!-- Legend -->
+        <rect x="16" y="306" width="8" height="8" fill="#5FB7B0" rx="1"/>
+        <text x="28" y="314" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Main flow</text>
+        <rect x="100" y="306" width="8" height="8" fill="#e74c3c" rx="1"/>
+        <text x="112" y="314" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Conversion losses (per machine)</text>
+        <rect x="310" y="306" width="8" height="8" fill="#22c55e" rx="1"/>
+        <text x="322" y="314" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Recuperation (limited)</text>
+      </svg>`;
+      document.getElementById('sankey-ac-wrap').innerHTML = `<div class="sankey-wrap">${svg}</div>`;
+    }
+
+    function renderDCSankey() {
+      const r = results.dc;
+      const lossW  = Math.max(5, Math.min(r.convLoss * 0.6, 14));
+      const recupW = Math.max(4, Math.min(r.recupRecovered * 1.1, 12));
+      const hasPV = results.hasPV;
+      const hasStorage = results.hasStorage;
+      const h = (hasPV || hasStorage) ? 340 : 310;
+
+      let optionalNodes = '';
+      if (hasPV) {
+        optionalNodes += `
+          <rect x="252" y="14" width="78" height="34" rx="8" fill="none" stroke="#5FB7B0" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="291" y="31" text-anchor="middle" fill="#5FB7B0" font-size="9.5" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">PV Array</text>
+          <text x="291" y="42" text-anchor="middle" fill="#5FB7B0" font-size="7.5" font-family="Plus Jakarta Sans,sans-serif">DC coupled</text>
+          <path class="sf-opt" d="M 291 48 C 291 68, 291 80, 291 96" stroke="#5FB7B0" stroke-width="5" fill="none" opacity="0.5" stroke-linecap="round"/>
+          <text x="298" y="74" fill="#5FB7B0" font-size="7.5" font-style="italic" font-family="Plus Jakarta Sans,sans-serif">direct</text>
+        `;
+      }
+      if (hasStorage) {
+        const battY = hasPV ? 268 : 248;
+        optionalNodes += `
+          <rect x="252" y="${battY}" width="78" height="34" rx="8" fill="none" stroke="#5FB7B0" stroke-width="1.5" stroke-dasharray="5 3"/>
+          <text x="291" y="${battY+18}" text-anchor="middle" fill="#5FB7B0" font-size="9.5" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Battery ESS</text>
+          <text x="291" y="${battY+29}" text-anchor="middle" fill="#5FB7B0" font-size="7.5" font-family="Plus Jakarta Sans,sans-serif">peak shaving</text>
+          <path class="sf-opt" d="M 291 ${battY} C 291 ${battY-20}, 291 ${battY-40}, 291 184" stroke="#5FB7B0" stroke-width="5" fill="none" opacity="0.5" stroke-linecap="round"/>
+        `;
+      }
+
+      const svg = `
+      <svg viewBox="0 0 600 ${h}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
+        <!-- Node: Grid -->
+        <rect x="16" y="128" width="68" height="44" rx="8" fill="#0E4C52"/>
+        <text x="50" y="147" text-anchor="middle" fill="white" font-size="11" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">Grid</text>
+        <text x="50" y="162" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="8.5" font-family="Plus Jakarta Sans,sans-serif">AC 400V</text>
+
+        <!-- Node: AIC (centralized converter) -->
+        <rect x="120" y="118" width="62" height="44" rx="8" fill="#0E4C52"/>
+        <text x="151" y="137" text-anchor="middle" fill="white" font-size="10" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">AIC</text>
+        <text x="151" y="151" text-anchor="middle" fill="rgba(255,255,255,0.6)" font-size="8" font-family="Plus Jakarta Sans,sans-serif">AC/DC</text>
+
+        <!-- Node: DC Bus (tall) -->
+        <rect x="252" y="96" width="78" height="108" rx="8" fill="#1a6b73"/>
+        <text x="291" y="144" text-anchor="middle" fill="white" font-size="12" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">DC Bus</text>
+        <text x="291" y="159" text-anchor="middle" fill="rgba(255,255,255,0.55)" font-size="9" font-family="Plus Jakarta Sans,sans-serif">650 V</text>
+
+        <!-- Node: Machine 1 -->
+        <rect x="422" y="50" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="463" y="74" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 1</text>
+
+        <!-- Node: Machine 2 -->
+        <rect x="422" y="131" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="463" y="155" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 2</text>
+
+        <!-- Node: Machine 3 -->
+        <rect x="422" y="212" width="82" height="38" rx="8" fill="#0E4C52"/>
+        <text x="463" y="236" text-anchor="middle" fill="white" font-size="10" font-weight="600" font-family="Plus Jakarta Sans,sans-serif">Machine 3</text>
+
+        <!-- Grid → AIC (animated) -->
+        <path class="sf-main" d="M 84 150 C 102 150, 102 140, 120 140" stroke="#5FB7B0" stroke-width="20" fill="none" opacity="0.55" stroke-linecap="round"/>
+
+        <!-- AIC → DC Bus (animated) -->
+        <path class="sf-main" d="M 182 140 C 212 140, 228 150, 252 150" stroke="#5FB7B0" stroke-width="18" fill="none" opacity="0.55" stroke-linecap="round"/>
+
+        <!-- Centralized loss at AIC only (red) -->
+        <path class="sf-loss" d="M 151 118 C 151 96, 158 76, 170 60" stroke="#e74c3c" stroke-width="${lossW}" fill="none" opacity="0.8" stroke-linecap="round"/>
+        <text x="174" y="56" fill="#e74c3c" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">~${r.convLoss.toFixed(1)}% loss</text>
+        <text x="174" y="68" fill="#e74c3c" font-size="7.5" font-style="italic" font-family="Plus Jakarta Sans,sans-serif">centralized only</text>
+
+        <!-- DC Bus → Machine 1 -->
+        <path class="sf-main" d="M 330 116 C 368 100, 392 78, 422 69" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <!-- DC Bus → Machine 2 -->
+        <path class="sf-main" d="M 330 150 C 368 150, 392 150, 422 150" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+        <!-- DC Bus → Machine 3 -->
+        <path class="sf-main" d="M 330 184 C 368 200, 392 220, 422 231" stroke="#5FB7B0" stroke-width="13" fill="none" opacity="0.5" stroke-linecap="round"/>
+
+        <!-- Regeneration loop: M1 → DC Bus → M3 (green animated) -->
+        <path class="sf-recup" d="M 422 80 C 396 86, 372 96, 344 112" stroke="#22c55e" stroke-width="${recupW}" fill="none" opacity="0.75" stroke-linecap="round"/>
+        <path class="sf-recup" d="M 344 188 C 372 202, 396 212, 422 222" stroke="#22c55e" stroke-width="${recupW}" fill="none" opacity="0.7" stroke-linecap="round"/>
+        <text x="366" y="98" fill="#22c55e" font-size="8.5" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">${r.recupRecovered.toFixed(1)}% shared</text>
+        <text x="366" y="109" fill="#22c55e" font-size="7.5" font-style="italic" font-family="Plus Jakarta Sans,sans-serif">on DC bus</text>
+
+        <!-- Optional PV / Storage -->
+        ${optionalNodes}
+
+        <!-- Legend -->
+        <rect x="16" y="${h-14}" width="8" height="8" fill="#5FB7B0" rx="1"/>
+        <text x="28" y="${h-6}" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Main flow</text>
+        <rect x="110" y="${h-14}" width="8" height="8" fill="#e74c3c" rx="1"/>
+        <text x="122" y="${h-6}" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Centralized loss (AIC only)</text>
+        <rect x="310" y="${h-14}" width="8" height="8" fill="#22c55e" rx="1"/>
+        <text x="322" y="${h-6}" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Energy sharing on DC bus</text>
+        ${(hasPV || hasStorage) ? `<rect x="490" y="${h-14}" width="8" height="8" fill="none" stroke="#5FB7B0" stroke-width="1" rx="1"/><text x="502" y="${h-6}" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Optional</text>` : ''}
+      </svg>`;
+      document.getElementById('sankey-dc-wrap').innerHTML = `<div class="sankey-wrap">${svg}</div>`;
+    }
+
+    function renderObservationsAC() {
+      const obs = [];
+      if (state.equipment.includes('cnc') || state.equipment.includes('conveyors')) {
+        obs.push('Most machines internally operate on DC — each undergoes multiple AC↔DC conversions before energy is used.');
+      } else {
+        obs.push('Energy passes through multiple conversion stages between grid and end use.');
+      }
+      obs.push(`Estimated conversion losses amount to ~${(results.ac.convLoss).toFixed(1)}% of total input energy.`);
+
+      if (results.hasRecup) {
+        obs.push('Regenerative energy from braking or deceleration is only partially recovered. The majority is dissipated as heat.');
+      } else {
+        obs.push('Limited regenerative potential detected in the current equipment mix.');
+      }
+
+      if (state.peakKw > 0) {
+        obs.push(`Peak demand of ${state.peakKw.toLocaleString()} kW drives demand charges. No internal buffering is in place.`);
+      } else {
+        obs.push('Peak demand cannot be offset without storage or internal energy sharing.');
+      }
+
+      const el = document.getElementById('observations-ac');
+      el.innerHTML = obs.map(o => `
+        <li class="observation">
+          <svg class="observation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          ${o}
+        </li>`).join('');
+    }
+
+    function renderObservationsDC() {
+      const obs = [
+        'Direct energy sharing between machines via DC bus — braking energy from one machine powers another.',
+        `Multiple redundant conversion stages eliminated — total chain losses reduced from ~${results.ac.convLoss.toFixed(1)}% to ~${results.dc.convLoss.toFixed(1)}%.`,
+      ];
+
+      if (results.hasStorage) {
+        obs.push('Battery storage enables peak shaving and energy buffering, reducing demand charges.');
+      } else {
+        obs.push('Optional storage can enable peak shaving and energy buffering in a later phase.');
+      }
+
+      if (results.hasPV) {
+        obs.push('PV energy feeds directly into the DC bus — no additional inverter losses.');
+      } else {
+        obs.push('Future PV can be integrated directly into the DC backbone without additional inverters.');
+      }
+
+      const el = document.getElementById('observations-dc');
+      el.innerHTML = obs.map(o => `
+        <li class="observation">
+          <svg class="observation-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          ${o}
+        </li>`).join('');
+    } } // end legacy block
+
+    /* ─── SCREEN 3 RENDER ─────────────────────────────────────── */
+
+    function assessViability() {
+      const profile = SEGMENT_PROFILES[state.segment];
+      const isGreenfield = state.projectPhase === 'greenfield';
+      const multipliers = isGreenfield ? profile.greenfield : profile.brownfield;
+
+      const capexData = getScenarioCapex(selectedScenario === 'baseline' ? 'hybrid' : selectedScenario);
+      const sd = getScenarioData(selectedScenario === 'baseline' ? 'hybrid' : selectedScenario);
+      const adjustedCapex = (capexData.total || 0) * multipliers.capexMultiplier;
+      const paybackYears = sd.annualSavingsEur > 0 ? (adjustedCapex / sd.annualSavingsEur) : 99;
+      const paybackMonths = Math.round(paybackYears * 12);
+
+      if (isGreenfield) {
+        return { verdict: 'viable', paybackMonths, paybackYears, multipliers, adjustedCapex };
+      }
+
+      if (profile.brownfieldViable === 'no') {
+        return { verdict: 'not_recommended', reason: profile.notRecommendedReason, paybackMonths, paybackYears, multipliers, adjustedCapex };
+      }
+
+      if (profile.brownfieldViable === 'rarely' && paybackYears > 10) {
+        return { verdict: 'not_recommended', reason: profile.notRecommendedReason, paybackMonths, paybackYears, multipliers, adjustedCapex };
+      }
+
+      if (paybackYears > 8) {
+        return { verdict: 'not_recommended', reason: profile.notRecommendedReason, paybackMonths, paybackYears, multipliers, adjustedCapex };
+      }
+
+      return { verdict: 'brownfield_conditional', paybackMonths, paybackYears, multipliers, adjustedCapex };
+    }
+
+    function renderScreen3() {
+      renderScenarioSelector();
+
+      const viability = assessViability();
+
+      if (viability.verdict === 'not_recommended') {
+        renderNotRecommended(viability);
+        document.getElementById('business-case-section').style.display = 'none';
+        return;
+      }
+
+      document.getElementById('business-case-section').style.display = '';
+
+      if (viability.verdict === 'brownfield_conditional') {
+        renderBrownfieldWarning(viability);
+      } else {
+        const warningEl = document.getElementById('brownfield-warning');
+        if (warningEl) warningEl.remove();
+      }
+
+      renderScreen3Content(viability);
+      renderFinalCTAs();
+    }
+
+    function renderScreen3Content(viability) {
+      renderKPITilesTop(viability);
+      renderInterpretation();
+      renderComparisonTable();
+      renderBusinessCase(viability);
+      renderRecommendation();
+    }
+
+    function fmt(n) {
+      return Math.round(n).toLocaleString('en-US');
+    }
+    function fmtK(n) {
+      if (Math.abs(n) >= 1000000) return `€${(n / 1000000).toFixed(2)}m`;
+      if (Math.abs(n) >= 1000) return `€${Math.round(n / 1000)}k`;
+      return `€${fmt(n)}`;
+    }
+
+    function renderScenarioSelector() {
+      const el = document.getElementById('scenario-selector');
+      const scenarios = [
+        { key: 'baseline', extraClass: ' baseline-card' },
+        { key: 'hybrid', extraClass: '' },
+        { key: 'fulldc', extraClass: '' },
+      ];
+      el.innerHTML = scenarios.map(s => {
+        const ref = ODCA_REF.scenarios[s.key];
+        const active = selectedScenario === s.key ? ' scenario-selector-active' : '';
+        const savingsStr = ref.savingsPct > 0 ? `${ref.savingsPct}% savings` : 'No savings';
+        return `
+          <div class="scenario-selector-card${active}${s.extraClass}" data-scenario="${s.key}">
+            <div class="scenario-selector-label">${ref.shortLabel}</div>
+            <div class="scenario-selector-name">${ref.label}</div>
+            <div class="scenario-selector-savings">${ref.savingsPct > 0 ? ref.savingsPct + '%' : '—'}</div>
+            <div class="scenario-selector-desc">${ref.description}</div>
+          </div>`;
+      }).join('');
+      el.querySelectorAll('.scenario-selector-card').forEach(card => {
+        card.addEventListener('click', () => {
+          selectedScenario = card.dataset.scenario;
+          renderScenarioSelector();
+          renderScreen3();
+        });
+      });
+    }
+
+    function getScenarioCapex(key) {
+      const r = results;
+      if (key === 'baseline') return 0;
+      if (key === 'fulldc') {
+        const uplift = 1.55;
+        const breakdown = {};
+        for (const k in r.capexBreakdown) breakdown[k] = r.capexBreakdown[k] * uplift;
+        return { breakdown, total: r.capexTotal * uplift };
+      }
+      return { breakdown: r.capexBreakdown, total: r.capexTotal };
+    }
+
+    function renderNotRecommended(viability) {
+      const profile = SEGMENT_PROFILES[state.segment];
+      const triggers = profile.triggerConditions.map(t =>
+        `<div class="trigger-item">
+          <svg class="trigger-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span>${t}</span>
+        </div>`
+      ).join('');
+
+      document.getElementById('interpretation').innerHTML = '';
+      document.getElementById('kpi-tiles-top').innerHTML = `
+        <div class="not-recommended-card" style="grid-column: 1 / -1;">
+          <svg class="not-recommended-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <div class="not-recommended-title">DC Architecture — Not Recommended for Current Scenario</div>
+          <div class="not-recommended-sub">${viability.reason}</div>
+          <div class="trigger-list">
+            <p class="section-eyebrow" style="margin-bottom:12px">What would change this assessment</p>
+            ${triggers}
+          </div>
+          <a href="https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true" target="_blank" class="btn-ghost" style="margin-top:8px">${profile.notRecommendedCTA}</a>
+        </div>`;
+
+      document.getElementById('recommendation-section').innerHTML = `
+        <div class="callout-light">
+          <div class="callout-title" style="color:var(--teal-light);">Honest assessment builds trust</div>
+          <div class="callout-text">This tool provides honest, site-specific assessments — including when DC is not the right choice today. When your situation changes, we are here to reassess.</div>
+        </div>`;
+    }
+
+    function renderBrownfieldWarning(viability) {
+      const profile = SEGMENT_PROFILES[state.segment];
+      let warningEl = document.getElementById('brownfield-warning');
+      if (!warningEl) {
+        warningEl = document.createElement('div');
+        warningEl.id = 'brownfield-warning';
+        const kpiEl = document.getElementById('kpi-tiles-top');
+        kpiEl.parentNode.insertBefore(warningEl, kpiEl);
+      }
+      warningEl.innerHTML = `
+        <div class="callout-warning">
+          <div class="callout-title">Brownfield Assessment</div>
+          <div class="callout-text">Retrofit economics are more challenging — the figures below reflect retrofit-specific cost assumptions (estimated payback: <strong>${viability.paybackYears.toFixed(1)} years</strong>). Viability improves with triggers such as: ${profile.triggerConditions.slice(0, 2).join('; ')}.</div>
+        </div>`;
+    }
+
+    function renderKPITilesTop(viability) {
+      const sd = getScenarioData(selectedScenario === 'baseline' ? 'fulldc' : selectedScenario);
+      const capexData = getScenarioCapex(selectedScenario === 'baseline' ? 'fulldc' : selectedScenario);
+      const capex = viability ? viability.adjustedCapex : (capexData.total || 0);
+      const paybackYears = viability ? viability.paybackYears : (sd.annualSavingsEur > 0 ? capex / sd.annualSavingsEur : 0);
+
+      const segment = state.segment;
+      let tiles = '';
+
+      if (segment === 'logistics') {
+        tiles = `
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">Time Saved vs. Grid Upgrade</div>
+            <div class="kpi-tile-top-value">12–48 mo</div>
+            <div class="kpi-tile-top-desc">vs. traditional grid upgrade</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">Annual OPEX Savings</div>
+            <div class="kpi-tile-top-value">${fmtK(sd.annualSavingsEur)}</div>
+            <div class="kpi-tile-top-desc">per year</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">CapEx Investment</div>
+            <div class="kpi-tile-top-value">${fmtK(capex)}</div>
+            <div class="kpi-tile-top-desc">estimated investment</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">Payback</div>
+            <div class="kpi-tile-top-value">${paybackYears.toFixed(1)} yr</div>
+            <div class="kpi-tile-top-desc">to recover investment</div>
+          </div>`;
+      } else {
+        tiles = `
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">Annual OPEX Savings</div>
+            <div class="kpi-tile-top-value">${fmtK(sd.annualSavingsEur)}/yr</div>
+            <div class="kpi-tile-top-desc">electricity bill reduction</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">CapEx Investment</div>
+            <div class="kpi-tile-top-value">${fmtK(capex)}</div>
+            <div class="kpi-tile-top-desc">estimated investment</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">Payback</div>
+            <div class="kpi-tile-top-value">${paybackYears.toFixed(1)} yr</div>
+            <div class="kpi-tile-top-desc">to recover investment</div>
+          </div>
+          <div class="kpi-tile-top">
+            <div class="kpi-tile-top-label">CO₂ Reduction</div>
+            <div class="kpi-tile-top-value">${fmt(Math.round(sd.co2eSavedTons))} t/yr</div>
+            <div class="kpi-tile-top-desc">annual carbon savings</div>
+          </div>`;
+      }
+
+      document.getElementById('kpi-tiles-top').innerHTML = tiles;
+    }
+
+    function renderInterpretation() {
+      const r = results;
+      const isLogistics = state.segment === 'logistics';
+      const sd = getScenarioData('fulldc');
+      const activeLoads = getActiveLoads(state.segment, state.equipment);
+      const totalLossPct = activeLoads.reduce((sum, l) => sum + (l.acLossPct || 3.0), 0);
+      const lossPct = totalLossPct.toFixed(1);
+      const lossEur = fmtK(r.annualCost * totalLossPct / 100);
+      const savingsEur = fmtK(sd.annualSavingsEur);
+      let text = '<p class="interpretation">';
+
+      text += 'The conversion losses shown on the previous screen account for approximately <strong>' + lossPct + '%</strong> of your annual electricity spend — roughly <strong>' + lossEur + '/yr</strong> lost before power reaches a single ' + (isLogistics ? 'charger' : 'machine') + '. ';
+      text += 'Replacing those with a DC backbone recovers <strong>' + savingsEur + ' per year</strong> through centralized conversion, ';
+      if (r.hasRecup) {
+        text += 'system-wide recuperation, ';
+      }
+      if (r.hasPV) {
+        text += 'direct DC coupling of PV, ';
+      }
+      if (r.hasStorage) {
+        text += 'integrated battery storage, ';
+      }
+      text += 'and reduced infrastructure complexity.';
+
+      text += '</p>';
+      document.getElementById('interpretation').innerHTML = text;
+    }
+
+    function renderComparisonTable() {
+      const keys = ['baseline', 'hybrid', 'fulldc'];
+      const sd = keys.map(k => getScenarioData(k));
+
+      function colClass(i) {
+        return keys[i] === selectedScenario ? ' class="col-active"' : '';
+      }
+      function thClass(i) {
+        return keys[i] === selectedScenario ? ' class="col-active"' : '';
+      }
+
+      const rows = [
+        ['Architecture', ...sd.map(s => s.architecture)],
+        ['Energy Savings', '—', `${sd[1].savingsPct}%`, `${sd[2].savingsPct}%`],
+        ['Annual Consumption', ...sd.map(s => `${fmt(Math.round(s.annualMwh))} MWh/a`)],
+        ['Annual Energy Cost', ...sd.map(s => fmtK(s.annualCostEur) + '/a')],
+        ['Annual Savings', '—', fmtK(sd[1].annualSavingsEur) + '/a', fmtK(sd[2].annualSavingsEur) + '/a'],
+        ['CO₂e Savings', '—', `~${fmt(Math.round(sd[1].co2eSavedTons))} t/a`, `~${fmt(Math.round(sd[2].co2eSavedTons))} t/a`],
+        ['Grid Peak Reduction', '—', `${sd[1].peakReductionRange[0]}–${sd[1].peakReductionRange[1]}%`, `${sd[2].peakReductionRange[0]}–${sd[2].peakReductionRange[1]}%`],
+      ];
+
+      const highlightRows = [1, 4, 5];
+
+      let html = `<table class="comparison-table">
+        <thead><tr>
+          <th>Parameter</th>
+          <th${thClass(0)}>AC Baseline</th>
+          <th${thClass(1)}>Hybrid AC/DC</th>
+          <th${thClass(2)}>Full DC Factory</th>
+        </tr></thead><tbody>`;
+      rows.forEach((row, ri) => {
+        const rClass = highlightRows.includes(ri) ? ' class="row-highlight"' : '';
+        html += `<tr${rClass}><td>${row[0]}</td><td${colClass(0)}>${row[1]}</td><td${colClass(1)}>${row[2]}</td><td${colClass(2)}>${row[3]}</td></tr>`;
+      });
+      html += `</tbody></table>`;
+      document.getElementById('comparison-table-wrap').innerHTML = html;
+    }
+
+    function renderRecommendation() {
+      const el = document.getElementById('recommendation-section');
+      const profile = SEGMENT_PROFILES[state.segment];
+
+      let startingPoint = 'machine cluster with highest DC-native load';
+      if (state.equipment.includes('cnc')) startingPoint = 'CNC / servo drive cluster';
+      else if (state.equipment.includes('conveyors')) startingPoint = 'conveyor and automated handling lines';
+      else if (state.equipment.includes('pumps')) startingPoint = 'VFD-driven pumps and compressors';
+      else if (state.equipment.includes('chargers')) startingPoint = 'charging infrastructure and DC loads';
+
+      let supplementary = '';
+      if (results.hasStorage && results.hasPV) {
+        supplementary = 'Your planned PV and storage investments align well — combined savings are maximized with direct DC coupling.';
+      } else if (results.hasPV) {
+        supplementary = 'PV benefits from direct DC coupling, avoiding an additional inverter conversion loss.';
+      } else if (results.hasStorage) {
+        supplementary = 'Battery storage enables peak shaving and energy buffering within the DC backbone.';
+      }
+
+      el.innerHTML = `
+        <div class="callout">
+          <div class="callout-title">Recommended starting point</div>
+          <div class="callout-text">Best entry point: <strong>${startingPoint}</strong>. Start with a DC island here to validate savings, then expand to a full DC backbone. ${supplementary}</div>
+        </div>`;
+    }
+
+    function renderFinalCTAs() {
+      const bookingUrl = 'https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true';
+      document.getElementById('final-ctas').innerHTML = `
+        <button class="btn-ghost" onclick="showScreen(4)">View Engineering Package</button>
+        <a href="${bookingUrl}" target="_blank" class="btn-ghost">Book a Call</a>`;
+    }
+
+    /* ─── BUSINESS CASE RENDER ────────────────────────────────── */
+    function calcNPV(capex, annualSavings, years, wacc) {
+      let npv = -capex;
+      for (let t = 1; t <= years; t++) {
+        npv += annualSavings / Math.pow(1 + wacc, t);
+      }
+      return npv;
+    }
+
+    function calcIRR(capex, annualSavings, years) {
+      if (annualSavings <= 0) return 0;
+      let lo = 0, hi = 1.0;
+      for (let i = 0; i < 100; i++) {
+        const mid = (lo + hi) / 2;
+        if (calcNPV(capex, annualSavings, years, mid) > 0) lo = mid; else hi = mid;
+      }
+      return (lo + hi) / 2;
+    }
+
+    function renderBusinessCase(viability) {
+      const r = results;
+      const sd = getScenarioData(selectedScenario);
+
+      const capexData = getScenarioCapex(selectedScenario);
+      const cb = capexData.breakdown;
+      const multiplier = viability ? viability.multipliers.capexMultiplier : 1;
+      const capexTotal = viability ? viability.adjustedCapex : capexData.total;
+
+      const rows = [
+        ['AIC Converter(s)', cb.aicConverter * multiplier],
+        ['DC/DC Converters', cb.dcDcConverters * multiplier],
+        ['DC Switchgear & Protection', cb.switchgear * multiplier],
+        ['DC Cabling & Bus Bars', cb.cabling * multiplier],
+        ['Installation & Commissioning', cb.installation * multiplier],
+        ['Engineering & Design', cb.engineering * multiplier],
+      ];
+
+      let tableHtml = `<table class="capex-table">
+        <thead><tr><th>Line Item</th><th>Estimated Cost</th></tr></thead>
+        <tbody>`;
+      rows.forEach(([label, val]) => {
+        tableHtml += `<tr><td>${label}</td><td>&euro;${fmt(val)}</td></tr>`;
+      });
+      tableHtml += `<tr class="capex-total"><td>Total Investment</td><td>&euro;${fmt(capexTotal)}</td></tr>`;
+      tableHtml += `</tbody></table>`;
+      document.getElementById('capex-table').innerHTML = tableHtml;
+
+      renderCashflowChart(capexTotal, sd.annualSavingsEur);
+    }
+
+    function renderCashflowChart(capex, annualSavings) {
+      const years = 20;
+      const data = [];
+      let cum = -capex;
+      data.push(cum);
+      for (let t = 1; t <= years; t++) {
+        cum += annualSavings;
+        data.push(cum);
+      }
+
+      const w = 560, h = 200;
+      const padL = 60, padR = 20, padT = 20, padB = 36;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+      const maxVal = Math.max(...data);
+      const minVal = Math.min(...data);
+      const range = maxVal - minVal || 1;
+      const barW = chartW / (years + 1) - 2;
+
+      const zeroY = padT + (maxVal / range) * chartH;
+
+      let bars = '';
+      data.forEach((val, i) => {
+        const x = padL + i * (chartW / (years + 1)) + 1;
+        const barH = Math.abs(val / range) * chartH;
+        const color = val >= 0 ? '#5FB7B0' : '#e74c3c';
+        const opacity = val >= 0 ? '0.7' : '0.5';
+        let y;
+        if (val >= 0) {
+          y = zeroY - barH;
+        } else {
+          y = zeroY;
+        }
+        bars += `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="${color}" opacity="${opacity}" rx="2"/>`;
+      });
+
+      // Payback marker
+      let paybackX = 0;
+      for (let i = 1; i < data.length; i++) {
+        if (data[i] >= 0 && data[i - 1] < 0) {
+          const frac = -data[i - 1] / (data[i] - data[i - 1]);
+          paybackX = padL + (i - 1 + frac) * (chartW / (years + 1));
+          break;
+        }
+      }
+
+      const paybackLine = paybackX > 0 ? `
+        <line x1="${paybackX}" y1="${padT}" x2="${paybackX}" y2="${h - padB}" stroke="#F79646" stroke-width="1.5" stroke-dasharray="4 3"/>
+        <text x="${paybackX}" y="${padT - 4}" text-anchor="middle" fill="#F79646" font-size="8" font-weight="700" font-family="Plus Jakarta Sans,sans-serif">Payback</text>
+      ` : '';
+
+      // X-axis labels
+      let xLabels = '';
+      [0, 5, 10, 15, 20].forEach(yr => {
+        const x = padL + yr * (chartW / (years + 1)) + barW / 2;
+        xLabels += `<text x="${x}" y="${h - 10}" text-anchor="middle" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Yr ${yr}</text>`;
+      });
+
+      // Zero line
+      const zeroLine = `<line x1="${padL}" y1="${zeroY}" x2="${w - padR}" y2="${zeroY}" stroke="var(--border)" stroke-width="1"/>`;
+
+      // Y-axis labels
+      const yLabels = `
+        <text x="${padL - 8}" y="${padT + 6}" text-anchor="end" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">&euro;${(maxVal / 1000000).toFixed(1)}M</text>
+        <text x="${padL - 8}" y="${zeroY + 3}" text-anchor="end" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">&euro;0</text>
+        <text x="${padL - 8}" y="${h - padB}" text-anchor="end" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">-&euro;${(Math.abs(minVal) / 1000000).toFixed(1)}M</text>
+      `;
+
+      const svg = `<svg viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+        ${zeroLine}${bars}${paybackLine}${xLabels}${yLabels}
+        <text x="${w / 2}" y="${h - 0}" text-anchor="middle" fill="#7a9fa4" font-size="8" font-family="Plus Jakarta Sans,sans-serif">Cumulative Net Cash Flow (undiscounted)</text>
+      </svg>`;
+
+      document.getElementById('cashflow-chart-wrap').innerHTML = `<div class="cashflow-chart">${svg}</div>`;
+    }
+
+    /* ─── SCREEN 4 RENDER (Engineering Package) ───────────────── */
+    function renderScreen4() {
+      renderEngArchitecture();
+      renderEngEquipment();
+      renderEngSpecs();
+      renderEngTimeline();
+      renderEngSafety();
+    }
+
+    function renderEngArchitecture() {
+      document.getElementById('eng-architecture').innerHTML = `
+        <p class="section-eyebrow">System Architecture</p>
+        <p class="eng-section-title">Single Line Diagram — DC Microgrid (IEC style)</p>
+        <div class="eng-sld-wrap">
+          <img src="engineering_export_sld.png" alt="ODCA Meta Case — DC Microgrid Single Line Diagram" class="eng-sld-image"/>
+        </div>
+      `;
+    }
+
+    function renderEngEquipment() {
+      // BOM with real OEM devices and options per component category
+      const sc = selectedScenario === 'baseline' ? 'hybrid' : selectedScenario;
+      const bomSpecs = BOM_SCENARIO_SPECS[sc];
+      const bomCategories = [
+        {
+          num: '1', component: 'Active Infeed Converter / Grid Interface', qty: 1,
+          rating: bomSpecs.aicRating,
+          options: [
+            { oem: 'Siemens', product: 'SINAMICS Active Line Module', spec: '250 kW–5 MW, regenerative, AC ↔ 650 V DC' },
+            { oem: 'ABB', product: 'PVS980-58BC class', spec: '1.5–2 MW, larger system option' },
+            { oem: 'Delta', product: 'PCS Series', spec: '100 kW–1 MW+, bidirectional' },
+          ]
+        },
+        {
+          num: '2', component: 'PV DC Interface / MPPT Converter', qty: 1,
+          rating: bomSpecs.pvInterface,
+          options: [
+            { oem: 'Delta', product: 'M100A / modular DC/DC cabinets', spec: '6–10 modules, PV MPPT' },
+            { oem: 'ABB', product: 'FIMER PVS-175 class', spec: 'PV string inverter / DC coupling' },
+          ]
+        },
+        {
+          num: '3', component: 'PV System', qty: 1,
+          rating: sc === 'fulldc' ? '530 kWp, DC-coupled; expansion-ready' : '530 kWp',
+          options: [
+            { oem: '—', product: 'Rooftop / ground-mount PV array', spec: 'DC-coupled to bus via PV interface' },
+          ]
+        },
+        {
+          num: '4', component: 'BESS Bidirectional DC/DC Converter', qty: 1,
+          rating: sc === 'fulldc' ? '500 kW' : '250 kW',
+          options: [
+            { oem: 'Siemens', product: 'SINAMICS DCP', spec: 'DC bus / storage coupling, bidirectional' },
+            { oem: 'ABB', product: 'ACS880-1604', spec: 'Industrial DC/DC, battery interface' },
+            { oem: 'Delta', product: 'Bidirectional DC/DC', spec: '100 kW–1 MW+, battery ↔ 650 V bus' },
+          ]
+        },
+        {
+          num: '5', component: 'Battery Energy Storage', qty: 1,
+          rating: bomSpecs.bess,
+          options: [
+            { oem: '—', product: 'Li-ion rack system (CATL / BYD / Tesvolt type)', spec: '500–800 V DC voltage window' },
+          ]
+        },
+        {
+          num: '6', component: 'Main DC Switchgear & Protection', qty: 1,
+          rating: bomSpecs.switchgear,
+          options: [
+            { oem: 'ABB', product: 'Tmax XT DC', spec: 'Up to 1500 VDC' },
+            { oem: 'Schneider', product: 'ComPacT NSX DC', spec: 'Up to 1500 VDC' },
+            { oem: 'Eaton', product: 'Bussmann DC Protection', spec: 'DC fuse/breaker, up to 1500 VDC' },
+            { oem: 'Siemens', product: 'SENTRON DC', spec: 'Up to 1500 VDC' },
+          ]
+        },
+        {
+          num: '7', component: 'Auxiliary DC Protection (24 V controls)', qty: 1, rating: '24 V DC',
+          options: [
+            { oem: 'Phoenix Contact', product: 'CAPAROC', spec: '12/24 V DC electronic circuit protection' },
+          ]
+        },
+        {
+          num: '8', component: 'DC Busbar System', qty: 1,
+          rating: bomSpecs.busbar,
+          options: [
+            { oem: 'Weidmüller', product: 'DC Intermediate Circuit Busbars', spec: 'Multi-axis DC links' },
+            { oem: 'Schneider', product: 'Linergy Busbars', spec: 'Up to 1000V+' },
+          ]
+        },
+        {
+          num: '9', component: 'DC Cabling & Connectors', qty: '1 lot', rating: '650/1000 V DC rated',
+          options: [
+            { oem: 'Phoenix Contact', product: 'DC power connectors', spec: 'Industrial DC connection systems' },
+            { oem: 'Weidmüller', product: 'DC wiring accessories', spec: 'Industrial DC automation' },
+          ]
+        },
+        {
+          num: '10', component: 'Monitoring, Control & SCADA', qty: 1,
+          rating: bomSpecs.monitoring,
+          options: [
+            { oem: 'Phoenix Contact', product: 'PLCnext', spec: 'Open control platform' },
+            { oem: 'Weidmüller', product: 'u-mation / DC monitoring', spec: 'Industrial DC automation' },
+            { oem: 'Siemens', product: 'SENTRON powermanager', spec: 'Energy monitoring & analytics' },
+          ]
+        },
+        {
+          num: '11', component: 'Insulation Monitoring & Fault Localization', qty: 1, rating: 'IEC 61557-8',
+          options: [
+            { oem: 'Siemens', product: 'IMD / fault locator', spec: 'DC insulation monitoring' },
+            { oem: 'Schneider', product: 'Vigilohm IMD', spec: 'IT system insulation monitoring' },
+            { oem: 'ABB', product: 'CM-IWN series', spec: 'Insulation monitoring relay' },
+          ]
+        },
+      ];
+
+      const oemLogos = {
+        'ABB': 'logos/ABB_logo.svg.png',
+        'Siemens': 'logos/Siemens-logo.svg.png',
+        'Delta': 'logos/DELTA_Electronics_Logo.png',
+        'Schneider': 'logos/Schneider_Electric_2007.svg.png',
+        'Vicor': 'logos/vicor.png',
+        'Phoenix Contact': 'logos/Phoenix_Contact_Logo.svg.png',
+        'Weidmüller': 'logos/weidmueller.png',
+        'Eaton': 'logos/Eaton_Corporation_logo.svg.png',
+        'Reinhausen': 'logos/Logo_Maschinenfabrik_Reinhausen.png',
+      };
+      function oemBadge(name) {
+        if (!name || name === '—') return '';
+        const logo = oemLogos[name];
+        if (logo) return `<img class="oem-logo" src="${logo}" alt="${name}" title="${name}"/>`;
+        return `<span class="oem-badge">${name}</span>`;
+      }
+
+      let tableHtml = `<table class="eng-table eng-table-bom">
+        <thead><tr><th>#</th><th>Component</th><th>Qty</th><th>Rating</th><th>OEM Options</th></tr></thead>
+        <tbody>`;
+      bomCategories.forEach(cat => {
+        const optionsHtml = cat.options.map(o =>
+          `<div class="bom-option"><span class="bom-option-logo">${oemBadge(o.oem)}</span><span class="bom-option-text"><span class="bom-product">${o.product}</span><span class="bom-spec">${o.spec}</span></span></div>`
+        ).join('');
+        tableHtml += `<tr>
+          <td>${cat.num}</td>
+          <td class="bom-component">${cat.component}</td>
+          <td>${cat.qty}</td>
+          <td>${cat.rating}</td>
+          <td class="bom-options-cell">${optionsHtml}</td>
+        </tr>`;
+      });
+      tableHtml += `</tbody></table>`;
+
+      document.getElementById('eng-equipment').innerHTML = `
+        <p class="section-eyebrow">Bill of Materials</p>
+        <p class="eng-section-title">Equipment Schedule — Reference Devices</p>
+        <p class="bom-subtitle">Reference architecture, not final procurement list. OEM examples indicate commercially available equipment classes. Final device selection, ratings, protection coordination and compliance validation are completed during detailed engineering.</p>
+        ${tableHtml}
+      `;
+    }
+
+    function renderEngSpecs() {
+      const sc = selectedScenario === 'baseline' ? 'hybrid' : selectedScenario;
+      const bs = BOM_SCENARIO_SPECS[sc];
+      const specs = [
+        ['DC Bus Voltage (nominal)', '650 V DC'],
+        ['DC Bus Voltage Range', '600 – 750 V DC'],
+        ['AIC Rated Power', bs.aicRating],
+        ['PV Capacity', sc === 'fulldc' ? '530 kWp, DC-coupled; expansion-ready' : '530 kWp'],
+        ['PV DC Interface', bs.pvInterface],
+        ['Battery', bs.bess],
+        ['Battery Voltage', 'Site-specific voltage window, e.g. 500–800 V DC'],
+        ['System Efficiency Target', 'Converter efficiency >97%; system efficiency calculated case-by-case'],
+        ['Protection Class', 'IP31–IP54 depending on installation location'],
+        ['Insulation Monitoring', 'IEC 61557-8 compliant'],
+        ['Communication Protocol', 'Profinet / EtherCAT / Modbus TCP'],
+        ['Control System', 'Kodnyx Optimization Controller'],
+        ['Redundancy', 'Modular architecture; N+1 optional'],
+        ['Grid Reconnection', 'Fast transfer / ride-through depending on BESS, AIC and protection design'],
+      ];
+
+      let tableHtml = `<table class="eng-table">
+        <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+        <tbody>`;
+      specs.forEach(([param, val]) => {
+        tableHtml += `<tr><td>${param}</td><td>${val}</td></tr>`;
+      });
+      tableHtml += `</tbody></table>`;
+
+      document.getElementById('eng-specs').innerHTML = `
+        <p class="section-eyebrow">Technical Data</p>
+        <p class="eng-section-title">Key Specifications</p>
+        ${tableHtml}
+      `;
+    }
+
+    function renderEngTimeline() {
+      const phases = [
+        { num: 'Phase 1', title: 'Assessment & Design', duration: '6 – 10 weeks', desc: 'Site analysis, load modeling, architecture design, simulation' },
+        { num: 'Phase 2', title: 'Procurement', duration: '8 – 16 weeks', desc: 'Equipment sourcing, FAT, logistics (partially parallelized)' },
+        { num: 'Phase 3', title: 'Installation & Commissioning', duration: 'TBD', desc: 'Electrical installation, integration, staged commissioning' },
+        { num: 'Phase 4', title: 'Optimization & Value Realization', duration: 'TBD', desc: 'Performance tuning, operator training, initial ROI unlock' },
+      ];
+
+      const cards = phases.map(p => `
+        <div class="eng-phase-card">
+          <div class="eng-phase-number">${p.num}</div>
+          <div class="eng-phase-title">${p.title}</div>
+          <div class="eng-phase-duration">${p.duration}</div>
+          <div class="eng-phase-desc">${p.desc}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('eng-timeline').innerHTML = `
+        <p class="section-eyebrow">Project Timeline</p>
+        <p class="eng-section-title">Deployment Timeline (Industrial DC Architecture)</p>
+        <div class="eng-timeline-phases">${cards}</div>
+        <p class="bom-subtitle" style="margin-top:12px">Typical deployment: 6–9 months. Pilot / DC island: 3–5 months.</p>
+      `;
+    }
+
+    function renderEngSafety() {
+      const items = [
+        ['IEC 61439', 'Low-voltage switchgear and controlgear assemblies'],
+        ['IEC 60364-4-41', 'Protection against electric shock'],
+        ['IEC 61557-8', 'Insulation monitoring devices for DC systems'],
+        ['IEC 62477-1', 'Safety requirements for power electronic converter systems'],
+        ['IEC 60204-1', 'Safety of machinery — electrical equipment of machines'],
+        ['IEC 61000 series', 'Electromagnetic compatibility (EMC)'],
+        ['IEC 62446 / IEC 62548', 'PV system testing, documentation and design'],
+        ['IEC 62619 / IEC 62933', 'Battery safety and energy storage systems'],
+        ['VDE SPEC 90037', 'DC-INDUSTRIE system description (industrial DC architecture)'],
+        ['VDE-AR-N 4105 / 4110', 'German grid connection rules (depending on voltage level)'],
+        ['2006/42/EC', 'Machinery Directive — essential health and safety requirements'],
+        ['DGUV Vorschrift 3', 'Electrical installations and equipment — periodic testing'],
+      ];
+
+      const checkIcon = `<svg class="eng-compliance-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`;
+
+      const list = items.map(([code, desc]) => `
+        <li class="eng-compliance-item">
+          ${checkIcon}
+          <span><strong>${code}</strong> — ${desc}</span>
+        </li>
+      `).join('');
+
+      document.getElementById('eng-safety').innerHTML = `
+        <p class="section-eyebrow">Compliance</p>
+        <p class="eng-section-title">Safety & Regulatory Standards</p>
+        <ul class="eng-compliance-list">${list}</ul>
+        <p class="capex-note" style="margin-top:16px">Compliance scope finalized during detailed engineering phase.</p>
+      `;
+    }
+
+    // Screen 0 event handlers
+    document.querySelectorAll('.segment-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.segment-card').forEach(c => c.classList.remove('segment-active'));
+        card.classList.add('segment-active');
+        state.segment = card.dataset.segment;
+        checkScreen0Ready();
+      });
+    });
+
+    document.querySelectorAll('.phase-card').forEach(card => {
+      card.addEventListener('click', () => {
+        document.querySelectorAll('.phase-card').forEach(c => c.classList.remove('phase-active'));
+        card.classList.add('phase-active');
+        state.projectPhase = card.dataset.phase;
+        checkScreen0Ready();
+      });
+    });
+
+    function checkScreen0Ready() {
+      const warningEl = document.getElementById('brownfield-early-warning');
+      const startBtn = document.getElementById('btn-start-diagnostic');
+      const bookingUrl = 'https://outlook.office.com/bookwithme/user/3cacf49477234033a9f04f34982069a8%40kodnyx.com?anonymous&ismsaljsauthenabled=true';
+
+      if (state.segment && SEGMENT_PROFILES[state.segment].comingSoon) {
+        warningEl.innerHTML = `
+          <div class="card" style="border-color:var(--teal-mid); background:rgba(95,183,176,0.06); margin-top:16px;">
+            <p style="font-weight:700;color:var(--teal);margin-bottom:4px;">${SEGMENT_PROFILES[state.segment].label} — Coming Soon</p>
+            <p style="font-size:0.85rem;color:var(--text-mid);">Full diagnostic logic for this segment is in development. Select Industrial Manufacturing or Logistics & EV Depot to run the diagnostic today.</p>
+          </div>`;
+        startBtn.disabled = true;
+        return;
+      }
+
+      if (state.segment && state.projectPhase === 'brownfield') {
+        const profile = SEGMENT_PROFILES[state.segment];
+        if (profile.brownfieldViable === 'no') {
+          warningEl.innerHTML = `
+            <div class="card" style="border-color:#e74c3c; background:rgba(231,76,60,0.04); margin-top:16px;">
+              <svg style="width:32px;height:32px;color:#e74c3c;margin-bottom:8px;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <p style="font-weight:700;color:#e74c3c;margin-bottom:6px;">DC Retrofit — Not Recommended for ${profile.label}</p>
+              <p style="font-size:0.85rem;color:var(--text-mid);margin-bottom:16px;">${profile.notRecommendedReason}</p>
+              <a href="${bookingUrl}" target="_blank" class="btn-ghost" style="font-size:0.82rem;">${profile.notRecommendedCTA || 'Discuss with a DC specialist'}</a>
+            </div>`;
+          startBtn.disabled = true;
+          return;
+        } else if (profile.brownfieldViable === 'rarely') {
+          warningEl.innerHTML = `
+            <div class="card" style="border-color:var(--orange); background:rgba(247,150,70,0.05); margin-top:16px;">
+              <p style="font-weight:700;color:var(--orange);margin-bottom:4px;">Retrofit economics are challenging for ${profile.label}</p>
+              <p style="font-size:0.85rem;color:var(--text-mid);">${profile.notRecommendedReason} You can still proceed to see the detailed assessment.</p>
+            </div>`;
+        } else if (profile.brownfieldViable === 'conditional') {
+          warningEl.innerHTML = `
+            <div class="card" style="border-color:var(--orange); background:rgba(247,150,70,0.05); margin-top:16px;">
+              <p style="font-weight:700;color:var(--orange);margin-bottom:4px;">Brownfield note</p>
+              <p style="font-size:0.85rem;color:var(--text-mid);">DC retrofit viability depends on specific site conditions and investment triggers. The assessment will factor in brownfield cost assumptions.</p>
+            </div>`;
+        }
+      } else {
+        warningEl.innerHTML = '';
+      }
+
+      startBtn.disabled = !(state.segment && state.projectPhase);
+    }
+
+    document.getElementById('btn-start-diagnostic').addEventListener('click', () => {
+      applySegmentDefaults();
+      showScreen(1);
+    });
+
+    function applySegmentDefaults() {
+      // No pre-selection — user chooses everything explicitly
+    }
+  </script>
+
+</body>
+</html>
